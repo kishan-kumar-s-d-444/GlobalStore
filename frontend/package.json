@@ -3,10 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.2",
+    "axios": "^1.7.9",
+    "class-variance-authority": "^0.7.1",
     "cra-template": "1.2.0",
+    "lib-utils-ts": "^0.0.0-test",
+    "lucide-react": "^0.475.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.5",
     "react-scripts": "5.0.1",
+    "sonner": "^1.7.4",
     "web-vitals": "^4.2.4"
   },
   "scripts": {
@@ -32,5 +39,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
   }
 }
