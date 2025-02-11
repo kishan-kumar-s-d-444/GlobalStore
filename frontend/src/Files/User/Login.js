@@ -24,7 +24,7 @@ const Login = () => {
         // e.preventDefault();
         // try {
         //     setLoading(true);
-        //     const res = await axios.post('https://globalcom-3c5s.onrender.com/api/v1/user/login', input, {
+        //     const res = await axios.post('https://localhost:3000/api/v1/user/login', input, {
         //         headers: {
         //             'Content-Type': 'application/json'
         //         },
@@ -58,10 +58,10 @@ const Login = () => {
 
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
-            <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8'>
+            <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8 w-96'>
                 <div className='my-4'>
-                <h1 className='text-center font-bold text-xl'>LOGO</h1>
-                <p className='text-sm text-center'>Login to see photos & videos from your friends</p>
+                    <h1 className='text-center font-bold text-xl'>LOGIN</h1>
+                    <p className='text-sm text-center'>Login to Dive</p>
                 </div>
                 <div>
                     <span className='font-medium'>Email</span>
@@ -93,7 +93,7 @@ const Login = () => {
                         <Button type='submit'>Login</Button>
                     )
                 }
-                <span className='text-center'>Doesn't have an account?<Link to="/signup" className='text-blue-600'>Signup</Link></span>
+                <span className='text-center'>Doesn't have an account?<Link to="/register" className='text-blue-600'>Register</Link></span>
             </form>
         </div>
     )

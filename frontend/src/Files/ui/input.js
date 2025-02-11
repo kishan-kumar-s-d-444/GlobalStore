@@ -1,6 +1,7 @@
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+// Update the import path to use a relative pathils"
+import { cn } from "../../lib/utils"
 
 const Input = React.forwardRef(({ className, type, ...props }, ref) => {
   return (
