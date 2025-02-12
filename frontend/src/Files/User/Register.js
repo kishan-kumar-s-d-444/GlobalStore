@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-// import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const Register = () => {
     const [input, setInput] = useState({
@@ -14,18 +14,18 @@ const Register = () => {
         password: ""
     });
     const [loading, setLoading] = useState(false);
-    // const {user} = useSelector(store=>store.auth);
-    const {user} ="None";
+    const {user} = useSelector(store=>store.auth);
     const navigate = useNavigate();
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
     }
+
     const signupHandler = async (e) => {
         e.preventDefault();
         console.log(input);
         try {
             setLoading(true);
-            const res = await axios.post('https://globalcom-3c5s.onrender.com/api/v1/user/register', input, {
+            const res = await axios.post('http://localhost:5000/api/v1/user/register', input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -42,7 +42,11 @@ const Register = () => {
             }
         } catch (error) {
             console.log(error);
+            if (error.response && error.response.data) {
             toast.error(error.response.data.message);
+        } else {
+            toast.error("An unexpected error occurred");
+        }
         }finally {
             setLoading(false);
         }
@@ -60,8 +64,8 @@ const Register = () => {
         <div className='flex items-center w-screen h-screen justify-center'>
             <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8'>
                 <div className='my-4'>
-                <h1 className='text-center font-bold text-xl'>LOGO</h1>
-                <p className='text-sm text-center'>Signup to see photos & videos from your friends</p>
+                <h1 className='text-center font-bold text-xl'>SIGNUP</h1>
+                <p className='text-sm text-center'>Signup to Dive</p>
                 </div>
                 <div>
                     <span className='font-medium'>Username</span>
