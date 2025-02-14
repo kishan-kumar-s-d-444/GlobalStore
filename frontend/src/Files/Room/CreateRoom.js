@@ -1,23 +1,41 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // For making API requests
 
 function CreateRoom() {
   const [roomName, setRoomName] = useState("");
   const [description, setDescription] = useState("");
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [externalLinks, setExternalLinks] = useState("");
-
+  
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user")); // Assuming user data is stored in localStorage after login
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission (e.g., send data to an API)
-    console.log("Room Name:", roomName);
-    console.log("Description:", description);
-    console.log("Profile Photo:", profilePhoto);
-    console.log("External Links:", externalLinks);
-    alert("Room created successfully!");
-    navigate("/"); // Redirect back to Home after submission
+
+    const formData = new FormData();
+    formData.append("roomName", roomName);
+    formData.append("description", description);
+    formData.append("externalLinks", externalLinks);
+    if (profilePhoto) {
+      formData.append("profilePhoto", profilePhoto);
+    }
+
+    try {
+      const response = await axios.post("/api/rooms", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${user.token}`, // Include the user's token for authentication
+        },
+      });
+
+      alert("Room created successfully!");
+      navigate("/"); // Redirect back to Home after submission
+    } catch (error) {
+      console.error("Error creating room:", error);
+      alert("Failed to create room. Please try again.");
+    }
   };
 
   return (
@@ -75,7 +93,7 @@ function CreateRoom() {
             value={externalLinks}
             onChange={(e) => setExternalLinks(e.target.value)}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="https://example.com"
+            placeholder="https://example.com, https://anotherlink.com"
           />
         </div>
 

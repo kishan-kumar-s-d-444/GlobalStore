@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import connectDB from "./utils/db.js";
 import userRoute from "./routes/user.route.js";
+import roomRoute from "./routes/room.route.js";
 
 
 // Initialize express app
@@ -23,7 +24,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/v1/user", userRoute);
-
+app.use("/api/v1/room", roomRoute);
 // Port configuration
 const PORT = process.env.PORT || 5000;
 
