@@ -3,7 +3,7 @@ import { Room } from "../models/room.model.js";
 export const createroom = async (req, res) => {
   const { roomName, description, externalLinks } = req.body;
   const profilePhoto = req.file ? req.file.path : '';
-  const createdBy = req.user._id;
+  const createdBy = req.user._id; // Ensure this is populated by your auth middleware
 
   try {
     const newRoom = new Room({
@@ -16,8 +16,8 @@ export const createroom = async (req, res) => {
 
     await newRoom.save();
     res.status(201).json({ message: 'Room created successfully!', room: newRoom });
-  } 
-  catch (error) {
+  } catch (error) {
+    console.error("Error creating room:", error);
     res.status(500).json({ message: 'Error creating room', error: error.message });
   }
 };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // For making API requests
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 function CreateRoom() {
   const [roomName, setRoomName] = useState("");
@@ -9,34 +10,40 @@ function CreateRoom() {
   const [externalLinks, setExternalLinks] = useState("");
   
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user")); // Assuming user data is stored in localStorage after login
+  const user = useSelector(store=>store.auth)
+  console.log(user)
+  console.log(user.token,"dasfafsfsa")
+  console.log(user.user._id)
+  const useri=user.user._id
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("roomName", roomName);
-    formData.append("description", description);
-    formData.append("externalLinks", externalLinks);
-    if (profilePhoto) {
-      formData.append("profilePhoto", profilePhoto);
-    }
 
-    try {
-      const response = await axios.post("/api/rooms", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${user.token}`, // Include the user's token for authentication
-        },
-      });
-
-      alert("Room created successfully!");
-      navigate("/"); // Redirect back to Home after submission
-    } catch (error) {
-      console.error("Error creating room:", error);
-      alert("Failed to create room. Please try again.");
-    }
-  };
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+    
+      const formData = new FormData();
+      formData.append("roomName", roomName);
+      formData.append("description", description);
+      formData.append("externalLinks", externalLinks);
+      if (profilePhoto) {
+        formData.append("profilePhoto", profilePhoto);
+      }
+    
+      try {
+        const response = await axios.post("http://localhost:5000/api/v1/room/createroom", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${user.token}`, // Include the user's token for authentication
+          },
+        });
+    
+        alert("Room created successfully!");
+        navigate("/"); // Redirect back to Home after submission
+      } catch (error) {
+        console.error("Error creating room:", error);
+        alert(error.response?.data?.message || "Failed to create room. Please try again.");
+      }
+    };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
