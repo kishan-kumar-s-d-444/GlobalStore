@@ -49,7 +49,6 @@ function CreateRoom() {
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Create Room</h1>
       <form onSubmit={handleSubmit} className="max-w-lg space-y-4">
-        {/* Room Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Room Name
