@@ -31,6 +31,7 @@ const Login = () => {
                 withCredentials: true
             });
             if (res.data.success) {
+                localStorage.setItem("user", JSON.stringify(res.data.user)); // 🛠️ Save user to localStorage
                 dispatch(setAuthUser(res.data.user));
                 navigate("/home");
                 toast.success(res.data.message);
@@ -39,6 +40,7 @@ const Login = () => {
                     password: ""
                 });
             }
+            
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
