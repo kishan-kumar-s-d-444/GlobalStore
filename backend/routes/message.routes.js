@@ -1,11 +1,8 @@
 import express from 'express';
 const router = express.Router();
-import {createMessage,getMessagesByRoom,} from '../controllers/message.controller.js'
+import { createMessage, getMessagesByRoom,deleteMessage } from '../controllers/message.controller.js';
 
-// Create message
 router.post("/", createMessage);
-
-// Get messages by room ID
 router.get("/:roomId", getMessagesByRoom);
-
+router.put("/delete/:messageId", deleteMessage);
 export default router; 

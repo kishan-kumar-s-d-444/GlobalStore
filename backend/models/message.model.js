@@ -1,9 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema({
   sender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: String,
     required: true,
   },
   roomId: {
@@ -14,6 +13,7 @@ const messageSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
+    maxlength: 10000000, // 10MB limit
   },
   type: {
     type: String,
@@ -25,4 +25,4 @@ const messageSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-module.exports = mongoose.model("Message", messageSchema);
+export default mongoose.model("Message", messageSchema);
