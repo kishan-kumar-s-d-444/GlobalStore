@@ -20,19 +20,21 @@ function Home() {
         <div className="w-64 bg-gray-800 text-white p-4 space-y-2">
           <button
             onClick={() => handleRoomChange("global")}
-            className={`w-full px-4 py-2 rounded-lg text-left ${activeRoom === "global"
-              ? "bg-blue-500 hover:bg-blue-600"
-              : "bg-gray-700 hover:bg-gray-600"
-              } transition-colors duration-200`}
+            className={`w-full px-4 py-2 rounded-lg text-left ${
+              activeRoom === "global"
+                ? "bg-blue-500 hover:bg-blue-600"
+                : "bg-gray-700 hover:bg-gray-600"
+            } transition-colors duration-200`}
           >
             Global Rooms
           </button>
           <button
             onClick={() => handleRoomChange("personal")}
-            className={`w-full px-4 py-2 rounded-lg text-left ${activeRoom === "personal"
-              ? "bg-blue-500 hover:bg-blue-600"
-              : "bg-gray-700 hover:bg-gray-600"
-              } transition-colors duration-200`}
+            className={`w-full px-4 py-2 rounded-lg text-left ${
+              activeRoom === "personal"
+                ? "bg-blue-500 hover:bg-blue-600"
+                : "bg-gray-700 hover:bg-gray-600"
+            } transition-colors duration-200`}
           >
             Personal Rooms
           </button>
@@ -43,7 +45,6 @@ function Home() {
           >
             Home
           </button>
-
         </div>
 
         {/* Central Content */}
@@ -132,16 +133,15 @@ function GlobalRoom() {
             <div
               key={room._id}
               onClick={() => {
-                if (joinedRoomIds.includes(room._id)) {
-                  navigate(`/home/room/${room._id}`);
-                } else {
+                if (!joinedRoomIds.includes(room._id)) {
                   setSelectedRoom(room);
                 }
               }}
-              className={`bg-white shadow-md rounded-lg p-4 flex flex-col items-center transition-shadow duration-200 ${joinedRoomIds.includes(room._id)
-                ? "cursor-pointer hover:shadow-lg"
-                : "cursor-pointer hover:ring-2 hover:ring-blue-400"
-                }`}
+              className={`bg-white shadow-md rounded-lg p-4 flex flex-col items-center transition-shadow duration-200 relative ${
+                joinedRoomIds.includes(room._id)
+                  ? "cursor-default hover:shadow-lg"
+                  : "cursor-pointer hover:ring-2 hover:ring-blue-400"
+              }`}
             >
               <img
                 src={room.roomImage}
@@ -152,10 +152,40 @@ function GlobalRoom() {
               <p className="text-sm text-gray-500 mt-1">
                 Created by: {room.createdBy?.username || "Unknown"}
               </p>
+              
               {joinedRoomIds.includes(room._id) && (
-                <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
-                  Joined
-                </span>
+                <>
+                  <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                    Joined
+                  </span>
+                  
+                  <div className="mt-3 grid grid-cols-2 gap-2 w-full">
+                    <button
+                      onClick={() => navigate(`/home/room/${room._id}`)}
+                      className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors"
+                    >
+                      Chat
+                    </button>
+                    <button
+                      onClick={() => navigate(`/home/store/${room._id}`)}
+                      className="px-2 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-600 transition-colors"
+                    >
+                      Store
+                    </button>
+                    <button
+                      onClick={() => navigate(`/home/post/${room._id}`)}
+                      className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
+                    >
+                      Post
+                    </button>
+                    <button
+                      onClick={() => navigate(`/home/profile/${room._id}`)}
+                      className="px-2 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 transition-colors"
+                    >
+                      Profile
+                    </button>
+                  </div>
+                </>
               )}
             </div>
           ))
@@ -304,12 +334,38 @@ function PersonalRoom({ room }) {
                 Delete Room
               </button>
 
-              <button
-                onClick={() => navigate(`/home/room/${room._id}`)}
-                className="mt-2 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Enter Room
-              </button>
+              <div className="mt-3 grid grid-cols-2 gap-2 w-full">
+                <button
+                  onClick={() => navigate(`/home/room/${room._id}`)}
+                  className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors"
+                >
+                  Chat
+                </button>
+                <button
+                  onClick={() => navigate(`/home/addproduct/${room._id}`)}
+                  className="px-2 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-600 transition-colors"
+                >
+                  addproduct
+                </button>
+                <button
+                  onClick={() => navigate(`/home/products/${room._id}`)}
+                  className="px-2 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-600 transition-colors"
+                >
+                  Products
+                </button>
+                <button
+                  onClick={() => navigate(`/home/post/${room._id}`)}
+                  className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
+                >
+                  Post
+                </button>
+                <button
+                  onClick={() => navigate(`/home/profile/${room._id}`)}
+                  className="px-2 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 transition-colors"
+                >
+                  Profile
+                </button>
+              </div>
             </div>
           ))
         )}
