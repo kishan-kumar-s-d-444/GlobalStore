@@ -6,9 +6,15 @@ import Register from './Files/User/Register';
 import Home from './Files/User/Home';
 import CreateRoom from './Files/Room/CreateRoom';
 import UseRoom from './Files/Room/UseRoom';
-import StoreRoom from './Files/Room/StoreRoom';
-import AddProduct from './Files/Room/AddProduct';
-import Products from './Files/Room/Products'
+import StoreRoom from './Files/Products/StoreRoom';
+import AddProduct from './Files/Products/AddProduct';
+import Products from './Files/Products/Products'
+import Purchase from './Files/Purchase/Purchase';
+import Success from './Files/Purchase/Success'
+import Cancel from './Files/Purchase/Cancel'
+import PurchaseSuccess from './Files/Purchase/PurchaseSuccess';
+import Gallery from './Files/Products/Galley';
+
 const App=()=>{
   return (
     <Router>
@@ -23,6 +29,11 @@ const App=()=>{
         <Route path='/home/addproduct/:roomId' element={<AddProduct/>}/>
         <Route path='/home/products/:roomId' element={<Products/>}/>
         <Route path='/home/store/:roomId' element={<StoreRoom/>}/>
+        <Route path='/home/store/:roomId/purchase/:productId' element={<Purchase/>}/>
+        <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Cancel />} />
+        <Route path="/purchase-success" element={<PurchaseSuccess />} />
+        <Route path="/home/gallery" element={<Gallery />} />
       </Routes>
     </Router>
   );

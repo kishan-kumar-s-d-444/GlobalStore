@@ -40,6 +40,13 @@ function Home() {
           </button>
 
           <button
+            onClick={() => navigate("/home/gallery")}
+            className="w-full px-4 py-2 rounded-lg text-center bg-green-500 text-white hover:bg-green-600 transition-colors duration-200 shadow-md"
+          >
+            My Gallery
+          </button>
+
+          <button
             onClick={() => navigate("/")}
             className={`w-full px-4 py-2 rounded-lg text-center bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 shadow-md`}
           >
@@ -67,6 +74,8 @@ function GlobalRoom() {
 
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  // console.log("KISHAN KUMAR SD says",user._id)
+  // console.log("KISHAN KUMAR SD says",user.username)
 
   useEffect(() => {
     const fetchPublicRooms = async () => {

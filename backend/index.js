@@ -9,6 +9,11 @@ import userRoute from "./routes/user.route.js";
 import roomRoute from "./routes/room.route.js";
 import messageRoutes from "./routes/message.routes.js";
 import productRoutes from "./routes/product.routes.js"
+import purchaseRoutes from './routes/purchase.routes.js';
+import galleryRoutes from './routes/gallery.routes.js';
+
+
+
 // For socket and server
 import http from "http"; // ✅ You were mixing require and import
 import { Server } from "socket.io";
@@ -32,6 +37,8 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/room", roomRoute);
 app.use("/api/v1/message", messageRoutes);
 app.use("/api/v1/product",productRoutes);
+app.use('/api/v1/purchase', purchaseRoutes);
+app.use('/api/v1/gallery', galleryRoutes);
 
 // Server and socket
 const server = http.createServer(app);

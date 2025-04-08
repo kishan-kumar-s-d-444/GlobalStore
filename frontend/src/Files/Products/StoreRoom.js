@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-// import { FiShoppingCart,FiX } from 'react-icons/fi';
-import { FiShoppingCart,FiEdit, FiTrash2, FiX, FiSave } from 'react-icons/fi';
+import { FiShoppingCart, FiEdit, FiTrash2, FiX, FiSave } from 'react-icons/fi';
 import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
@@ -18,12 +17,37 @@ const StoreRoom = () => {
     const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
+        // Update the fetchProducts function in your StoreRoom component
         const fetchProducts = async () => {
             try {
                 const res = await axios.get(`http://localhost:5000/api/v1/product/room/${roomId}`, {
                     withCredentials: true,
                 });
-                setProducts(res.data);
+
+                // Fetch usernames for each product
+                const productsWithUsernames = await Promise.all(
+                    res.data.map(async (product) => {
+                        try {
+                            const userRes = await axios.get(
+                                `http://localhost:5000/api/v1/user/${product.userId}`,
+                                { withCredentials: true }
+                            );
+                            return {
+                                ...product,
+                                username: userRes.data.data.username || 'Unknown'
+                            };
+                            
+                        } catch (err) {
+                            console.error(`Error fetching user ${product.userId}:`, err);
+                            return {
+                                ...product,
+                                username: 'Unknown'
+                            };
+                        }
+                    })
+                );
+
+                setProducts(productsWithUsernames);
                 setLoading(false);
             } catch (err) {
                 console.error(err);
@@ -50,22 +74,7 @@ const StoreRoom = () => {
     };
 
     const handlePurchase = async () => {
-        try {
-            await axios.post(
-                `http://localhost:5000/api/v1/orders`,
-                {
-                    productId: selectedProduct._id,
-                    quantity,
-                    totalPrice: (selectedProduct.price * quantity).toFixed(2)
-                },
-                { withCredentials: true }
-            );
-            alert('Purchase successful!');
-            closeBuyModal();
-        } catch (err) {
-            console.error(err);
-            alert(err.response?.data?.message || 'Error processing purchase. Please try again.');
-        }
+        navigate(`/home/store/${roomId}/purchase/${selectedProduct._id}?quantity=${quantity}`);
     };
 
     if (loading) {
@@ -91,6 +100,7 @@ const StoreRoom = () => {
                             key={product._id}
                             className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                         >
+
                             {product.type === 'image' ? (
                                 <img
                                     src={product.fileUrl}
@@ -123,7 +133,7 @@ const StoreRoom = () => {
 
                                 <div className="mt-4 flex justify-between items-center">
                                     <span className="text-sm text-gray-500">
-                                        Sold by: {product.userId?.username || 'Unknown'}
+                                        Sold by: {product.username || 'Unknown'}
                                     </span>
                                     <button
                                         onClick={() => openBuyModal(product)}
