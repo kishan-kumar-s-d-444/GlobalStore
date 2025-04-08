@@ -11,19 +11,10 @@ import { verifyToken } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
 
-// Add a new product
-router.post('/', verifyToken, upload.single('file'), addProduct);
-
-// Get all products for a room
+router.post('/', verifyToken, upload.productImage, addProduct);
 router.get('/room/:roomId', verifyToken, getProductsByRoom);
-
-// Get a single product
 router.get('/:id', verifyToken, getProductById);
-
-// Update a product
 router.put('/:id', verifyToken, updateProduct);
-
-// Delete a product
 router.delete('/:id', verifyToken, deleteProduct);
 
 export default router;

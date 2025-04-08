@@ -11,8 +11,7 @@ import messageRoutes from "./routes/message.routes.js";
 import productRoutes from "./routes/product.routes.js"
 import purchaseRoutes from './routes/purchase.routes.js';
 import galleryRoutes from './routes/gallery.routes.js';
-
-
+import postRoutes from './routes/post.routes.js';
 
 // For socket and server
 import http from "http"; // ✅ You were mixing require and import
@@ -28,9 +27,22 @@ app.use(cors({
   credentials: true
 }));
 
+// Parse JSON bodies
 app.use(express.json());
+// Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
+// Parse cookies
 app.use(cookieParser());
+
+// Debug middleware to log request details
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Headers:', req.headers);
+  if (req.method === 'POST' && req.headers['content-type']?.includes('multipart/form-data')) {
+    console.log('Multipart form data request detected');
+  }
+  next();
+});
 
 // Routes
 app.use("/api/v1/user", userRoute);
@@ -39,6 +51,7 @@ app.use("/api/v1/message", messageRoutes);
 app.use("/api/v1/product",productRoutes);
 app.use('/api/v1/purchase', purchaseRoutes);
 app.use('/api/v1/gallery', galleryRoutes);
+app.use('/api/v1/post', postRoutes);
 
 // Server and socket
 const server = http.createServer(app);

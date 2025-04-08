@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,6 +8,7 @@ const PurchaseSuccess = () => {
     const [message, setMessage] = useState('Processing your purchase...');
     const [isProcessing, setIsProcessing] = useState(true);
     const query = new URLSearchParams(location.search);
+    const productAddedRef = useRef(false);
 
     const productId = query.get('productId');
     const userId = query.get('userId');
@@ -15,6 +16,10 @@ const PurchaseSuccess = () => {
 
     useEffect(() => {
         const addToGallery = async () => {
+            // Prevent multiple calls to the API
+            if (productAddedRef.current) return;
+            productAddedRef.current = true;
+            
             try {
                 console.log('Adding to gallery:', { userId, productId, quantity });
                 const res = await axios.post(

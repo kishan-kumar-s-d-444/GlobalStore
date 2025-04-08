@@ -12,12 +12,31 @@ export const addToGallery = async (req, res) => {
             // Create new gallery for user if it doesn't exist
             gallery = new Gallery({
                 userId,
-                products: [{ productId, quantity }]
+                products: [{ productId, quantity, purchasedAt: new Date() }]
             });
             await gallery.save();
         } else {
-            // Add new product to existing gallery
-            gallery.products.push({ productId, quantity });
+            // Check if product already exists in the gallery
+            const productExists = gallery.products.some(
+                item => item.productId.toString() === productId.toString()
+            );
+            
+            if (productExists) {
+                // Update quantity if product already exists
+                gallery.products = gallery.products.map(item => {
+                    if (item.productId.toString() === productId.toString()) {
+                        return {
+                            ...item,
+                            quantity: item.quantity + quantity
+                        };
+                    }
+                    return item;
+                });
+            } else {
+                // Add new product to existing gallery
+                gallery.products.push({ productId, quantity, purchasedAt: new Date() });
+            }
+            
             await gallery.save();
         }
 

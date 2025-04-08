@@ -5,7 +5,15 @@ import { v2 as cloudinary } from 'cloudinary';
 // Add a new product
 export const addProduct = async (req, res) => {
     try {
+        console.log('Adding product, request body:', req.body);
+        console.log('File:', req.file);
+        
         const { name, description, price, type, roomId } = req.body;
+        
+        if (!req.file) {
+            console.error('No file uploaded');
+            return res.status(400).json({ message: 'File is required' });
+        }
         
         // Check if room exists and user is a member
         const room = await Room.findById(roomId);
@@ -29,11 +37,12 @@ export const addProduct = async (req, res) => {
         });
 
         await product.save();
+        console.log('Product saved successfully:', product);
 
         res.status(201).json(product);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error in addProduct:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 

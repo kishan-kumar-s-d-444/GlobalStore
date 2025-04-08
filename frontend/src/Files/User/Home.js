@@ -182,7 +182,7 @@ function GlobalRoom() {
                       Store
                     </button>
                     <button
-                      onClick={() => navigate(`/home/post/${room._id}`)}
+                      onClick={() => navigate(`/home/posts/${room._id}`)}
                       className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
                     >
                       Post
@@ -351,6 +351,12 @@ function PersonalRoom({ room }) {
                   Chat
                 </button>
                 <button
+                  onClick={() => navigate(`/home/profile/${room._id}`)}
+                  className="px-2 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 transition-colors"
+                >
+                  Profile
+                </button>
+                <button
                   onClick={() => navigate(`/home/addproduct/${room._id}`)}
                   className="px-2 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-600 transition-colors"
                 >
@@ -363,17 +369,18 @@ function PersonalRoom({ room }) {
                   Products
                 </button>
                 <button
-                  onClick={() => navigate(`/home/post/${room._id}`)}
+                  onClick={() => navigate(`/home/addpost/${room._id}`)}
+                  className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
+                >
+                  Add Post
+                </button>
+                <button
+                  onClick={() => navigate(`/home/posts/${room._id}`)}
                   className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
                 >
                   Post
                 </button>
-                <button
-                  onClick={() => navigate(`/home/profile/${room._id}`)}
-                  className="px-2 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 transition-colors"
-                >
-                  Profile
-                </button>
+                
               </div>
             </div>
           ))

@@ -14,7 +14,10 @@ import Success from './Files/Purchase/Success'
 import Cancel from './Files/Purchase/Cancel'
 import PurchaseSuccess from './Files/Purchase/PurchaseSuccess';
 import Gallery from './Files/Products/Galley';
-
+import Profile from './Files/User/Profile';
+import ProfileRoom from './Files/Room/ProfileRoom';
+import Posts from './Files/Posts/Posts';
+import AddPost from './Files/Posts/AddPost';
 const App=()=>{
   return (
     <Router>
@@ -34,6 +37,10 @@ const App=()=>{
         <Route path="/cancel" element={<Cancel />} />
         <Route path="/purchase-success" element={<PurchaseSuccess />} />
         <Route path="/home/gallery" element={<Gallery />} />
+        <Route path="/home/profile" element={<Profile />} />
+        <Route path='/home/profile/:roomId' element={<ProfileRoom />} />
+        <Route path='/home/addpost/:roomId' element={<AddPost/>}/>
+        <Route path='/home/posts/:roomId' element={<Posts/>}/>
       </Routes>
     </Router>
   );

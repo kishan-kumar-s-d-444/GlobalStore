@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const Gallery = () => {
     const { user } = useSelector(state => state.auth);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchGallery = async () => {
@@ -32,6 +34,10 @@ const Gallery = () => {
         if (user?._id) fetchGallery();
     }, [user]);
 
+    const handleHomeClick = () => {
+        navigate('/');
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -42,7 +48,15 @@ const Gallery = () => {
 
     return (
         <div className="max-w-6xl mx-auto p-6">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Your Purchased Products</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold text-gray-800">Your Purchased Products</h1>
+                <button 
+                    onClick={handleHomeClick}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                    Home
+                </button>
+            </div>
 
             {products.length === 0 ? (
                 <p className="text-gray-500">You haven't purchased anything yet.</p>

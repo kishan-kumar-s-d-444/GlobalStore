@@ -3,9 +3,17 @@ import { Room } from "../models/room.model.js";
 
 export const createRoom = async (req, res) => {
   try {
+    console.log('Creating room, request body:', req.body);
+    console.log('File:', req.file);
+    
     const { roomName, roomType } = req.body;
     const roomImage = req.file?.path;
     const createdBy = req.userId;
+
+    if (!req.file) {
+      console.error('No file uploaded');
+      return res.status(400).json({ message: 'Room image is required' });
+    }
 
     if (!roomName || !roomImage || !roomType) {
       return res.status(400).json({ message: "Room name, type, and image are required" });
@@ -20,11 +28,12 @@ export const createRoom = async (req, res) => {
     });
 
     await newRoom.save();
+    console.log('Room saved successfully:', newRoom);
 
     res.status(201).json({ message: "Room created successfully", room: newRoom });
   } catch (error) {
     console.error("Error creating room:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
