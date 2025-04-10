@@ -97,7 +97,7 @@ const Register = () => {
         } catch (error) {
             console.error(error);
             if (error.response) {
-                if (error.response.status === 409) {
+                if (error.response.status === 401) {
                     if (error.response.data.message.includes("email")) {
                         toast.error("Email already exists");
                         setErrors({...errors, email: "Email already registered"});
@@ -142,7 +142,7 @@ const Register = () => {
                     <div className="w-full">
                         <button
                             className="w-full flex items-center justify-center gap-2 py-3 px-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                            onClick={() => toast.info("Google sign up coming soon!")}
+                            onClick={() => toast.info("Click button to Signup")}
                         >
                             Sign up to Sphere
                         </button>

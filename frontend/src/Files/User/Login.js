@@ -128,7 +128,7 @@ const Login = () => {
                     <div className="flex flex-col items-center mb-6">
                         <button
                             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 text-gray-700 font-medium"
-                            onClick={() => toast.info("Google login coming soon!")}
+                            onClick={() => toast.info("Click button to Login")}
                         >
                            Login To Sphere
                         </button>

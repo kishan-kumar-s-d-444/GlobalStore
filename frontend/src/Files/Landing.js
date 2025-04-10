@@ -96,7 +96,13 @@ const Landing = () => {
         <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50">
             {/* Navbar */}
             <nav className="w-full p-6 bg-white shadow-md flex justify-between items-center">
-                <div className="text-2xl font-bold text-blue-600">MyApp</div>
+                <div className="text-2xl font-bold text-blue-600">
+                <img 
+                            src="/logo.png" 
+                            alt="Sphere Logo" 
+                            className="h-24 w-24 object-contain"
+                        />
+                </div>
                 <div className="flex items-center gap-4">
                     {user ? (
                         <>
