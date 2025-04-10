@@ -101,3 +101,25 @@ export const getUserById = async (req, res) => {
         });
     }
 };
+
+export const updateUser = async (req, res) => {
+    try {
+      const { name, email, password } = req.body;
+  
+      const updatedFields = { username: name, email };
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        updatedFields.password = await bcrypt.hash(password, salt);
+      }
+  
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        { $set: updatedFields },
+        { new: true }
+      ).select("-password");
+  
+      res.status(200).json({ message: "User updated", user: updatedUser });
+    } catch (err) {
+      res.status(500).json({ message: "Error updating user", error: err.message });
+    }
+  };

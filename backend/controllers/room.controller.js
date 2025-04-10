@@ -129,3 +129,44 @@ export const deleteRoom = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Leave a room
+// Leave Room Controller
+export const leaveRoom = async (req, res) => {
+  const { roomId } = req.params;
+  const userId = req.userId; // Comes from verifyToken middleware
+
+  console.log('Attempting to leave room:', { roomId, userId });
+
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID is required' });
+  }
+
+  try {
+    const room = await Room.findById(roomId);
+    if (!room) {
+      return res.status(404).json({ success: false, message: "Room not found" });
+    }
+
+    if (room.createdBy.toString() === userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Creator cannot leave the room. Please delete or transfer ownership.",
+      });
+    }
+
+    if (!room.members.includes(userId)) {
+      return res.status(400).json({ success: false, message: "User not in room" });
+    }
+
+    room.members.pull(userId);
+    await room.save();
+
+    return res.status(200).json({ success: true, message: "Left the room successfully" });
+  } catch (error) {
+    console.error("Leave Room Error:", error);
+    return res.status(500).json({ success: false, message: "Error leaving room" });
+  }
+};
+
+

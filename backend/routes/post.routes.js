@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPost,getPostsByRoom,likePost,addComment,getAllPosts } from '../controllers/post.controller.js';
+import { createPost,getPostsByRoom,likePost,addComment,getAllPosts,deleteComment } from '../controllers/post.controller.js';
 import upload from '../middlewares/upload.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 
@@ -25,4 +25,5 @@ router.get('/room/:roomId', verifyToken, getPostsByRoom);
 router.post('/:postId/like', verifyToken, likePost);
 router.post('/:postId/comment', verifyToken, addComment);
 router.get('/all', verifyToken, getAllPosts);
+router.delete('/:postId/comment/:commentId', verifyToken, deleteComment);
 export default router;

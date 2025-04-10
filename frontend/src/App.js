@@ -18,6 +18,7 @@ import Profile from './Files/User/Profile';
 import ProfileRoom from './Files/Room/ProfileRoom';
 import Posts from './Files/Posts/Posts';
 import AddPost from './Files/Posts/AddPost';
+import Search from './Files/User/Search';
 const App=()=>{
   return (
     <Router>
@@ -38,6 +39,7 @@ const App=()=>{
         <Route path="/purchase-success" element={<PurchaseSuccess />} />
         <Route path="/home/gallery" element={<Gallery />} />
         <Route path="/home/profile" element={<Profile />} />
+        <Route path="/home/search" element={<Search />} />
         <Route path='/home/profile/:roomId' element={<ProfileRoom />} />
         <Route path='/home/addpost/:roomId' element={<AddPost/>}/>
         <Route path='/home/posts/:roomId' element={<Posts/>}/>

@@ -160,3 +160,37 @@ export const getPostsByRoom = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// DELETE /api/v1/post/comment/:commentId
+export const deleteComment = async (req, res) => {
+  try {
+    const { postId, commentId } = req.params;
+    const {userId} = req.body;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const comment = post.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    console.log('Attempting to delete comment:', { postId, commentId, userId });
+    console.log('Post found:', post);
+    console.log('Comment found:', comment);
+    if (comment.userId.toString() !== userId) {
+      console.log('Unauthorized attempt to delete comment by userId:', userId);
+      return res.status(403).json({ message: "Unauthorized to delete this comment" });
+    }
+
+    post.comments.pull({ _id: commentId });
+    await post.save();
+
+    res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
