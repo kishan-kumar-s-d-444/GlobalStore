@@ -157,31 +157,34 @@ const Search = () => {
       <div className="flex">
         {/* Sidebar */}
         <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
-          <div className="p-6 flex flex-col gap-2">
-            <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
-              <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
-            </div>
-            {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                    if (label === 'Logout') handleLogout();
-                    else if (label === 'Home') navigate('/');
-                    else if (label === 'Rooms') navigate('/home');
-                    else if (label === 'My Rooms') navigate('/home');
-                    else if (label === 'My Gallery') navigate('/home/gallery');
-                    else if (label === 'My Profile') navigate('/home/profile');
-                    else if (label === 'Search') navigate('/home/search');
-                  }}
-                className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
-              >
-                <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
-                <span>{label}</span>
-              </button>
-            ))}
-
+        <div className="p-6 flex flex-col gap-2">
+          <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
+            <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
           </div>
-        </aside>
+          {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                if (label === 'Logout') handleLogout();
+                else if (label === 'Home') navigate('/');
+                else if (label === 'Rooms') navigate('/home/publicrooms');
+                else if (label === 'My Rooms') navigate('/home/myrooms');
+                else if (label === 'My Gallery') navigate('/home/gallery');
+                else if (label === 'My Profile') navigate('/home/profile');
+                else if (label === 'Search') navigate('/home/search');
+              }}
+              className={`w-full px-4 py-3 text-left rounded-lg transition-colors duration-200 flex items-center gap-3 ${
+                label === 'Search'
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+              }`}
+            >
+              <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </aside>
 
         {/* Main Content */}
         <div className="ml-80 flex-1 px-8 py-8">

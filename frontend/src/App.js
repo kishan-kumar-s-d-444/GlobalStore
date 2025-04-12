@@ -6,6 +6,8 @@ import Register from './Files/User/Register';
 import Home from './Files/User/Home';
 import CreateRoom from './Files/Room/CreateRoom';
 import UseRoom from './Files/Room/UseRoom';
+import PublicRooms from './Files/Room/PublicRooms';
+import MyRooms from './Files/Room/MyRooms';
 import StoreRoom from './Files/Products/StoreRoom';
 import AddProduct from './Files/Products/AddProduct';
 import Products from './Files/Products/Products'
@@ -29,7 +31,7 @@ const App=()=>{
         <Route path='*' element={<Navigate to="/" />} />
         <Route path='/home' element={<Home/>}/>
         <Route path='/home/createroom' element={<CreateRoom/>}/>
-        <Route path='/home/room/:roomId' element={<UseRoom/>}/>
+        <Route path='/home/chat/:roomId' element={<UseRoom/>}/>
         <Route path='/home/addproduct/:roomId' element={<AddProduct/>}/>
         <Route path='/home/products/:roomId' element={<Products/>}/>
         <Route path='/home/store/:roomId' element={<StoreRoom/>}/>
@@ -40,6 +42,8 @@ const App=()=>{
         <Route path="/home/gallery" element={<Gallery />} />
         <Route path="/home/profile" element={<Profile />} />
         <Route path="/home/search" element={<Search />} />
+        <Route path="/home/publicrooms" element={<PublicRooms />} />
+        <Route path="/home/myrooms" element={<MyRooms />} />
         <Route path='/home/profile/:roomId' element={<ProfileRoom />} />
         <Route path='/home/addpost/:roomId' element={<AddPost/>}/>
         <Route path='/home/posts/:roomId' element={<Posts/>}/>

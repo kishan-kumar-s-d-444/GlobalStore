@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regularHeart, faComment } from '@fortawesome/free-regular-svg-icons';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { removeAuthUser } from '../../redux/authSlice';
 
 const ProfileRoom = () => {
   const { roomId } = useParams();
@@ -21,7 +22,7 @@ const ProfileRoom = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const dispatch = useDispatch();
   const isMember = members.some((member) => member?._id === user?._id);
 
   useEffect(() => {
@@ -131,6 +132,12 @@ const ProfileRoom = () => {
     }
   };
 
+  const handleLogout = () => {
+    dispatch(removeAuthUser());
+    localStorage.removeItem('token');
+    navigate('/login');
+};
+
   const openPostModal = (post) => {
     setSelectedPost(post);
     setIsModalOpen(true);
@@ -170,24 +177,31 @@ const ProfileRoom = () => {
   return (
     <div className="flex flex-col md:flex-row">
       {/* Sidebar */}
-      <aside className="w-80 h-screen bg-white border-r border-gray-200 p-6 hidden md:flex flex-col gap-2 fixed">
-        <div className="text-2xl font-bold text-blue-600 mb-8 text-center">
-          <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
-        </div>
-        {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile'].map((label, idx) => (
-          <button
-            key={idx}
-            onClick={() => {
-              if (label === 'Home') navigate('/');
-              else navigate(`/home/${label.toLowerCase().replace(/\s/g, '')}`);
-            }}
-            className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
-          >
-            <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤'][idx]}</span>
-            <span>{label}</span>
-          </button>
-        ))}
-      </aside>
+      <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
+            <div className="p-6 flex flex-col gap-2">
+              <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
+                <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
+              </div>
+              {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    if (label === 'Logout') handleLogout();
+                    else if (label === 'Home') navigate('/');
+                    else if (label === 'Rooms') navigate('/home/publicrooms');
+                    else if (label === 'My Rooms') navigate('/home/myrooms');
+                    else if (label === 'My Gallery') navigate('/home/gallery');
+                    else if (label === 'My Profile') navigate('/home/profile');
+                    else if (label === 'Search') navigate('/home/search');
+                  }}
+                  className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
+                >
+                  <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+          </aside>
 
       {/* Main Content */}
       <div className="flex-1 ml-0 md:ml-80 px-6 py-10 bg-gray-100 min-h-screen">
@@ -217,13 +231,13 @@ const ProfileRoom = () => {
             {isMember ? (
               <>
                 <button
-                  onClick={() => navigate(`/home/room/${room._id}`)}
+                  onClick={() => navigate(`/home/chat/${room._id}`)}
                   className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
                 >
                   Room Chat
                 </button>
                 <button
-                  onClick={() => navigate(`/home/products/${room._id}`)}
+                  onClick={() => navigate(`/home/store/${room._id}`)}
                   className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                 >
                   Room Products

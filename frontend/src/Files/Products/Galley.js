@@ -120,6 +120,14 @@ const Gallery = () => {
                     >
                         Retry
                     </button>
+                    <p className="text-red-500 mb-4">Didn't Purchase Any Yet</p>
+                    <p className="text-red-500 mb-4"></p>
+                    <button 
+                        onClick={() =>navigate('/home/publicrooms')}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                    >
+                        Browse
+                    </button>
                 </div>
             </div>
         );
@@ -128,42 +136,35 @@ const Gallery = () => {
     return (
         <div className="flex min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
             {/* Sidebar */}
-            <aside className="hidden md:flex flex-col w-64 bg-white shadow-xl z-30">
-                <div className="p-6 flex flex-col h-full">
-                    <div className="mb-8 text-center">
-                        <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
-                        <h1 className="mt-2 text-xl font-bold text-gray-800">Digital Gallery</h1>
-                    </div>
-                    
-                    <div className="flex-1 space-y-2">
-                        {[
-                            { label: 'Home', icon: <FiHome />, action: () => navigate('/') },
-                            { label: 'Search', icon: <FiSearch />, action: () => navigate('/home/search') },
-                            { label: 'Rooms', icon: <FiMessageSquare />, action: () => navigate('/home') },
-                            { label: 'My Rooms', icon: <FiUsers />, action: () => navigate('/home') },
-                            { label: 'My Gallery', icon: <FiImage />, action: () => navigate('/home/gallery') },
-                            { label: 'My Profile', icon: <FiUser />, action: () => navigate('/home/profile') },
-                        ].map((item, idx) => (
-                            <button
-                                key={idx}
-                                onClick={item.action}
-                                className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
-                            >
-                                <span className="text-lg">{item.icon}</span>
-                                <span>{item.label}</span>
-                            </button>
-                        ))}
-                    </div>
-                    
-                    <button
-                        onClick={handleLogout}
-                        className="mt-auto px-4 py-3 text-left text-gray-700 hover:bg-red-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-red-600"
-                    >
-                        <FiLogOut className="text-lg" />
-                        <span>Logout</span>
-                    </button>
-                </div>
-            </aside>
+            <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
+        <div className="p-6 flex flex-col gap-2">
+          <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
+            <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
+          </div>
+          {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                if (label === 'Logout') handleLogout();
+                else if (label === 'Home') navigate('/');
+                else if (label === 'Rooms') navigate('/home/publicrooms');
+                else if (label === 'My Rooms') navigate('/home/myrooms');
+                else if (label === 'My Gallery') navigate('/home/gallery');
+                else if (label === 'My Profile') navigate('/home/profile');
+                else if (label === 'Search') navigate('/home/search');
+              }}
+              className={`w-full px-4 py-3 text-left rounded-lg transition-colors duration-200 flex items-center gap-3 ${
+                label === 'My Gallery'
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+              }`}
+            >
+              <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </aside>
 
             {/* Main Content */}
             <main className="flex-1 p-6 ml-0 md:ml-64">
@@ -228,7 +229,7 @@ const Gallery = () => {
                             <h3 className="text-xl font-medium text-gray-700 mb-2">Your gallery is empty</h3>
                             <p className="text-gray-500 mb-6">You haven't purchased anything yet.</p>
                             <button
-                                onClick={() => navigate('/home')}
+                                onClick={() => navigate('/home/publicrooms')}
                                 className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                             >
                                 Browse Products

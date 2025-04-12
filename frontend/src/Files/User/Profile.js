@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { removeAuthUser,setUser } from '../../redux/authSlice';
+import { removeAuthUser, setUser } from '../../redux/authSlice';
 
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -29,8 +29,8 @@ const Profile = () => {
         formData,
         { withCredentials: true }
       );
-  
-      dispatch(setUser(res.data.user)); // ✅ update Redux state
+
+      dispatch(setUser(res.data.user));
       setShowEditModal(false);
     } catch (err) {
       console.error("Update failed", err);
@@ -38,7 +38,6 @@ const Profile = () => {
       setUpdating(false);
     }
   };
-  
 
   const fetchData = async () => {
     try {
@@ -186,56 +185,67 @@ const Profile = () => {
     </div>
   );
 
-
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar */}
-          <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
-            <div className="p-6 flex flex-col gap-2">
-              <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
-                <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
-              </div>
-              {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    if (label === 'Logout') handleLogout();
-                    else if (label === 'Home') navigate('/');
-                    else navigate(`/home/${label.toLowerCase().replace(/\s/g, '')}`);
-                  }}
-                  className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
-                >
-                  <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
-          </aside>
+        <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
+        <div className="p-6 flex flex-col gap-2">
+          <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
+            <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
+          </div>
+          {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                if (label === 'Logout') handleLogout();
+                else if (label === 'Home') navigate('/');
+                else if (label === 'Rooms') navigate('/home/publicrooms');
+                else if (label === 'My Rooms') navigate('/home/myrooms');
+                else if (label === 'My Gallery') navigate('/home/gallery');
+                else if (label === 'My Profile') navigate('/home/profile');
+                else if (label === 'Search') navigate('/home/search');
+              }}
+              className={`w-full px-4 py-3 text-left rounded-lg transition-colors duration-200 flex items-center gap-3 ${
+                label === 'My Profile'
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+              }`}
+            >
+              <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </aside>
 
-          <div className="ml-80 px-4 py-8">
-            {/* Main Content */}
-            <div className="flex-1 space-y-8">
+          {/* Main Content - Wider and better aligned */}
+          <div className="ml-80 px-8 py-8 w-full max-w-6xl">
+            <div className="space-y-8">
               {/* User Profile Section */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
                 <div className="p-8">
-                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <div className="flex flex-col sm:flex-row items-center gap-8">
                     <div className="flex-shrink-0">
-                      <div className="h-20 w-20 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-2xl font-bold">
+                      <div className="h-24 w-24 rounded-full bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-inner">
                         {user?.username?.charAt(0).toUpperCase()}
                       </div>
                     </div>
-                    <div className="text-center sm:text-left">
+                    <div className="text-center sm:text-left flex-1">
                       <h1 className="text-3xl font-bold text-gray-800">{user?.username}</h1>
-                      <p className="text-gray-600 mt-1">{user?.email}</p>
-                      <div className="mt-4 flex justify-center sm:justify-start gap-4">
+                      <p className="text-gray-600 mt-2">{user?.email}</p>
+                      <div className="mt-6 flex justify-center sm:justify-start gap-4">
                         <button
                           onClick={() => setShowEditModal(true)}
-                          className="px-4 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors duration-200"
+                          className="px-6 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-all duration-200 shadow-sm hover:shadow-md"
                         >
                           Edit Profile
+                        </button>
+                        <button
+                          onClick={() => navigate('/home/gallery')}
+                          className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                        >
+                          Browse Gallery
                         </button>
                       </div>
                     </div>
@@ -246,8 +256,8 @@ const Profile = () => {
               {/* Rooms Sections */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Rooms Created Section */}
-                <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
-                  <div className="p-6 border-b border-gray-200">
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+                  <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-blue-50">
                     <h2 className="text-2xl font-semibold text-gray-800">Rooms Created</h2>
                     <p className="text-gray-600 mt-1">All the rooms you've created</p>
                   </div>
@@ -263,7 +273,7 @@ const Profile = () => {
                           title="No rooms created yet"
                           description="Get started by creating your first room!"
                           buttonText="Create Room"
-                          buttonLink="/create-room"
+                          buttonLink="/home/createroom"
                         />
                       )}
                     </div>
@@ -271,8 +281,8 @@ const Profile = () => {
                 </div>
 
                 {/* Rooms Joined Section */}
-                <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
-                  <div className="p-6 border-b border-gray-200">
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+                  <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-blue-50">
                     <h2 className="text-2xl font-semibold text-gray-800">Rooms Joined</h2>
                     <p className="text-gray-600 mt-1">All the rooms you've joined</p>
                   </div>
@@ -288,7 +298,7 @@ const Profile = () => {
                           title="No rooms joined yet"
                           description="Join public rooms to start collaborating!"
                           buttonText="Browse Rooms"
-                          buttonLink="/home/rooms"
+                          buttonLink="/home/search"
                         />
                       )}
                     </div>
@@ -297,10 +307,18 @@ const Profile = () => {
               </div>
 
               {/* Products Purchased Section */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
-                <div className="p-6 border-b border-gray-200">
-                  <h2 className="text-2xl font-semibold text-gray-800">Products Purchased</h2>
-                  <p className="text-gray-600 mt-1">All the products you've purchased</p>
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-blue-50 flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-800">Products Purchased</h2>
+                    <p className="text-gray-600 mt-1">All the products you've purchased</p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/home/gallery')}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 text-sm shadow-sm hover:shadow-md"
+                  >
+                    Browse Gallery
+                  </button>
                 </div>
 
                 {loading ? (
@@ -308,7 +326,7 @@ const Profile = () => {
                 ) : (
                   <div className="divide-y divide-gray-200">
                     {products.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
                         {products.map(product => (
                           <ProductCard key={product._id} product={product} />
                         ))}
@@ -318,7 +336,7 @@ const Profile = () => {
                         title="No products purchased yet"
                         description="Your purchased products will appear here"
                         buttonText="Browse Products"
-                        buttonLink="/home"
+                        buttonLink="/home/publicrooms"
                       />
                     )}
                   </div>
@@ -328,55 +346,74 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
       {showEditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Name"
-              className="w-full mb-3 p-2 border rounded"
-            />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email"
-              className="w-full mb-3 p-2 border rounded"
-            />
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="New Password"
-              className="w-full mb-4 p-2 border rounded"
-            />
-            <div className="flex justify-end gap-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-2xl w-full max-w-md shadow-xl">
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800">Edit Profile</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Email"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="New Password"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-4 mt-8">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
+                className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors duration-200"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdate}
                 disabled={updating}
-                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-70"
               >
-                {updating ? "Updating..." : "Save"}
+                {updating ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Updating...
+                  </span>
+                ) : "Save Changes"}
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
-
   );
 };
 

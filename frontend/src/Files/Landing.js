@@ -133,9 +133,20 @@ const Landing = () => {
   };
 
   const handleLogout = () => {
+    // Clear state first
+    setPosts([]);
+    setPublicRooms([]);
+    setJoinedRoomIds([]);
+    setCommentModalPost(null);
+    
+    // Then dispatch and navigate
     dispatch(removeAuthUser());
     localStorage.removeItem('token');
-    navigate('/login');
+    
+    // Use setTimeout to ensure React finishes current render cycle
+    setTimeout(() => {
+      navigate('/login');
+    }, 0);
   };
 
   // Shuffle array and pick first 3 rooms
@@ -160,13 +171,17 @@ const Landing = () => {
             onClick={() => {
               if (label === 'Logout') handleLogout();
               else if (label === 'Home') navigate('/');
-              else if (label === 'Rooms') navigate('/home');
-              else if (label === 'My Rooms') navigate('/home');
+              else if (label === 'Rooms') navigate('/home/publicrooms');
+              else if (label === 'My Rooms') navigate('/home/myrooms');
               else if (label === 'My Gallery') navigate('/home/gallery');
               else if (label === 'My Profile') navigate('/home/profile');
               else if (label === 'Search') navigate('/home/search');
             }}
-            className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
+            className={`w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600${
+              label === 'Home'
+              ? 'bg-blue-100 text-blue-600'
+              : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+            }`}
           >
             <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
             <span>{label}</span>
