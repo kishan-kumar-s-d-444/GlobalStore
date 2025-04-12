@@ -76,7 +76,7 @@ const Register = () => {
 
         try {
             setLoading(true);
-            const res = await axios.post('http://localhost:5000/api/v1/user/register', input, {
+            const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/register`, input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },

@@ -30,7 +30,7 @@ const Posts = () => {
     const fetchData = async () => {
       try {
         // Fetch room details
-        const roomRes = await axios.get(`http://localhost:5000/api/v1/room/single/${roomId}`, {
+        const roomRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/single/${roomId}`, {
           withCredentials: true
         });
         setRoomDetails(roomRes.data || {
@@ -40,7 +40,7 @@ const Posts = () => {
         });
 
         // Fetch posts
-        const postsRes = await axios.get(`http://localhost:5000/api/v1/post/room/${roomId}`, {
+        const postsRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/room/${roomId}`, {
           withCredentials: true
         });
         setPosts(postsRes.data.map(post => ({
@@ -64,7 +64,7 @@ const Posts = () => {
   const handleLike = async (postId) => {
     try {
       await axios.post(
-        `http://localhost:5000/api/v1/post/${postId}/like`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/like`,
         { userId: user._id },
         { withCredentials: true }
       );
@@ -87,7 +87,7 @@ const Posts = () => {
   const handleComment = async (postId, content) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/v1/post/${postId}/comment`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/comment`,
         { userId: user._id, content },
         { withCredentials: true }
       );
@@ -113,7 +113,7 @@ const Posts = () => {
 
   const handleDeleteComment = async (commentId, postId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/v1/post/${postId}/comment/${commentId}`, {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/comment/${commentId}`, {
         data: { userId: user._id },
         withCredentials: true,
       });

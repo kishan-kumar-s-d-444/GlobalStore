@@ -22,7 +22,7 @@ const Gallery = () => {
     useEffect(() => {
         const fetchGallery = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/v1/gallery/${user._id}`, {
+                const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/gallery/${user._id}`, {
                     withCredentials: true,
                 });
 
@@ -98,7 +98,7 @@ const Gallery = () => {
         try {
             const loadingToast = toast.loading('Removing from collection...');
             
-            const response = await axios.delete(`http://localhost:5000/api/v1/gallery/remove/${productId}`, {
+            const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/gallery/remove/${productId}`, {
                 withCredentials: true
             });
             

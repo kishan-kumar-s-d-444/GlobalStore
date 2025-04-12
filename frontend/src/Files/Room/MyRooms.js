@@ -28,7 +28,7 @@ function MyRooms() {
   const convertToPublic = async (roomId) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/v1/room/${roomId}/make-public`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/${roomId}/make-public`,
         {},
         { withCredentials: true }
       );
@@ -50,7 +50,7 @@ function MyRooms() {
   const deleteRoom = async () => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/v1/room/${roomToDelete._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/${roomToDelete._id}`,
         { withCredentials: true }
       );
       setRooms((prev) => prev.filter((room) => room._id !== roomToDelete._id));
@@ -63,7 +63,7 @@ function MyRooms() {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/v1/room/myrooms", {
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/myrooms`, {
           withCredentials: true,
         });
         setRooms(res.data.rooms);

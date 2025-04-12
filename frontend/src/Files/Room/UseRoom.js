@@ -40,7 +40,7 @@ const UseRoom = () => {
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/v1/message/${roomId}`, {
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/message/${roomId}`, {
         withCredentials: true,
       });
       if (res.data.success && res.data.messages) {
@@ -62,7 +62,7 @@ const UseRoom = () => {
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/v1/room/single/${roomId}`, {
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/single/${roomId}`, {
           withCredentials: true,
         });
         if (res.data.success && res.data.room) {
@@ -81,7 +81,7 @@ const UseRoom = () => {
   }, [roomId]);
 
   useEffect(() => {
-    socket.current = io("http://localhost:5000");
+    socket.current = io(process.env.REACT_APP_BACKEND_URL);
     socket.current.emit("joinRoom", roomId);
 
     socket.current.on("message", (message) => {

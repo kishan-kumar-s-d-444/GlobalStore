@@ -25,7 +25,7 @@ const Profile = () => {
     try {
       setUpdating(true);
       const res = await axios.put(
-        `http://localhost:5000/api/v1/user/${user._id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/user/${user._id}`,
         formData,
         { withCredentials: true }
       );
@@ -42,13 +42,13 @@ const Profile = () => {
   const fetchData = async () => {
     try {
       // Fetch rooms created by user
-      const createdRes = await axios.get("http://localhost:5000/api/v1/room/myrooms", {
+      const createdRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/myrooms`, {
         withCredentials: true,
       });
       setCreatedRooms(createdRes.data.rooms);
 
       // Fetch public rooms and filter joined rooms
-      const publicRes = await axios.get("http://localhost:5000/api/v1/room/public", {
+      const publicRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, {
         withCredentials: true,
       });
 
@@ -60,7 +60,7 @@ const Profile = () => {
       setJoinedRooms(joined);
 
       // Fetch purchased products
-      const galleryRes = await axios.get(`http://localhost:5000/api/v1/gallery/${user._id}`, {
+      const galleryRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/gallery/${user._id}`, {
         withCredentials: true,
       });
 

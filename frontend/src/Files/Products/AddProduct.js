@@ -100,7 +100,7 @@ const AddProduct = () => {
         try {
             const loadingToast = toast.loading('Adding product...');
 
-            await axios.post('http://localhost:5000/api/v1/product', formData, {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/product`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },

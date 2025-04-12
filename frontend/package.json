@@ -11,6 +11,7 @@
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "cra-template": "1.2.0",
+    "env": "^0.0.2",
     "framer-motion": "^12.6.3",
     "lib-utils-ts": "^0.0.0-test",
     "lucide-react": "^0.475.0",

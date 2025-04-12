@@ -26,7 +26,7 @@ function PublicRooms() {
   useEffect(() => {
     const fetchPublicRooms = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/v1/room/public", {
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, {
           withCredentials: true,
         });
         setPublicRooms(res.data.rooms);
@@ -47,7 +47,7 @@ function PublicRooms() {
   const handleJoinRoom = async (roomId) => {
     try {
       await axios.post(
-        `http://localhost:5000/api/v1/room/join/${roomId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/join/${roomId}`,
         {},
         { withCredentials: true }
       );

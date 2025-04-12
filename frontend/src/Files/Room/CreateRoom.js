@@ -53,7 +53,7 @@ const CreateRoom = () => {
       const loadingToast = toast.loading("Creating room...");
       
       const res = await axios.post(
-        "http://localhost:5000/api/v1/room/createroom",
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/createroom`,
         formData,
         {
           withCredentials: true,

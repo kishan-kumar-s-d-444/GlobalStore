@@ -28,7 +28,7 @@ const ProfileRoom = () => {
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
-        const { data: roomRes } = await axios.get(`http://localhost:5000/api/v1/room/single/${roomId}`, {
+        const { data: roomRes } = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/single/${roomId}`, {
           withCredentials: true,
         });
 
@@ -37,7 +37,7 @@ const ProfileRoom = () => {
           setRoom(roomData);
 
           if (roomData.createdBy) {
-            const { data: creatorRes } = await axios.get(`http://localhost:5000/api/v1/user/${roomData.createdBy}`, {
+            const { data: creatorRes } = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/${roomData.createdBy}`, {
               withCredentials: true,
             });
             if (creatorRes.success) {
@@ -47,7 +47,7 @@ const ProfileRoom = () => {
 
           if (roomData.members?.length > 0) {
             const memberPromises = roomData.members.map((memberId) =>
-              axios.get(`http://localhost:5000/api/v1/user/${memberId}`, { withCredentials: true })
+              axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/${memberId}`, { withCredentials: true })
             );
 
             const membersRes = await Promise.all(memberPromises);
@@ -62,7 +62,7 @@ const ProfileRoom = () => {
             setMembers(membersData.filter(Boolean));
           }
 
-          const { data: postRes } = await axios.get(`http://localhost:5000/api/v1/post/room/${roomId}`, {
+          const { data: postRes } = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/room/${roomId}`, {
             withCredentials: true,
           });
           setPosts(postRes);
@@ -81,7 +81,7 @@ const ProfileRoom = () => {
 
   const handleJoinRoom = async () => {
     try {
-      await axios.post(`http://localhost:5000/api/v1/room/join/${roomId}`, {}, { withCredentials: true });
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/join/${roomId}`, {}, { withCredentials: true });
       toast.success('Successfully joined the room!');
       window.location.reload();
     } catch (err) {
@@ -94,7 +94,7 @@ const ProfileRoom = () => {
     try {
       const response = await axios({
         method: 'delete',
-        url: `http://localhost:5000/api/v1/room/${roomId}/leave`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/${roomId}/leave`,
         withCredentials: true
       });
       if (response.data.success) {
@@ -110,7 +110,7 @@ const ProfileRoom = () => {
   const handleLike = async (postId) => {
     try {
       await axios.post(
-        `http://localhost:5000/api/v1/post/${postId}/like`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/like`,
         { userId: user._id },
         { withCredentials: true }
       );
