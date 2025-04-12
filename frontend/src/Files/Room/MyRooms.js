@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {useDispatch } from 'react-redux';
 import Modal from "react-modal";
+import { removeAuthUser } from '../../redux/authSlice';
 
 Modal.setAppElement("#root");
 
@@ -10,11 +12,13 @@ function MyRooms() {
   const [loading, setLoading] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [roomToDelete, setRoomToDelete] = useState(null);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    console.log("Logout clicked");
+    dispatch(removeAuthUser());
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   const handleCreateRoom = () => {

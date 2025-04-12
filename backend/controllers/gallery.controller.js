@@ -72,3 +72,27 @@ export const getGalleryByUserId = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch gallery' });
     }
 };
+
+export const removeFromGallery = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.userId;
+      
+        const gallery = await Gallery.findOne({ userId });
+        if (!gallery) {
+            return res.status(404).json({ message: 'Gallery not found' });
+        }
+
+        // Remove the product from the gallery
+        gallery.products = gallery.products.filter(
+            item => item._id.toString() !== id
+        );
+
+        await gallery.save();
+
+        res.status(200).json({ message: 'Product removed from gallery' });
+    } catch (error) {
+        console.error('Error removing from gallery:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

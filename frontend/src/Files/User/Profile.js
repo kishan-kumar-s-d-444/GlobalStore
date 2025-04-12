@@ -65,11 +65,21 @@ const Profile = () => {
       });
 
       const gallery = galleryRes.data.gallery;
-      const formatted = gallery.products.map(item => ({
-        ...item.productId,
-        purchasedAt: item.purchasedAt,
-        quantity: item.quantity
-      }));
+      const formatted = gallery.products.map(item => {
+        if (!item.productId) {
+          console.warn('Missing productId in gallery item:', item);
+          return {
+            price: 0,
+            purchasedAt: item.purchasedAt || new Date(),
+            quantity: item.quantity || 1
+          };
+        }
+        return {
+          ...item.productId,
+          purchasedAt: item.purchasedAt,
+          quantity: item.quantity
+        };
+      });
 
       setProducts(formatted);
     } catch (error) {
@@ -131,24 +141,28 @@ const Profile = () => {
   const ProductCard = ({ product }) => (
     <div className="p-4 hover:bg-gray-50 transition-colors duration-200 rounded-lg flex items-start gap-4 border border-gray-200">
       <div className="flex-shrink-0">
-        {product.image ? (
+        {product?.image ? (
           <img
             src={product.image}
-            alt={product.name}
+            alt={product?.name || 'Product image'}
             className="h-16 w-16 rounded-lg object-cover"
           />
         ) : (
           <div className="h-16 w-16 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600">
-            {product.name.charAt(0).toUpperCase()}
+            {(product?.name?.charAt(0) || 'P').toUpperCase()}
           </div>
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="text-lg font-medium text-indigo-600 truncate">{product.name}</h3>
-        <p className="text-gray-600 text-sm mt-1">Quantity: {product.quantity}</p>
-        <p className="text-gray-600 text-sm">Price: ${product.price?.toFixed(2)}</p>
+        <h3 className={`text-lg font-medium truncate ${product?.name ? 'text-blue-600' : 'text-red-600'}`}>
+          {product?.name || 'Product Missing'}
+        </h3>
+        <p className="text-gray-600 text-sm mt-1">Quantity: {product?.quantity || 0}</p>
+        <p className="text-gray-600 text-sm">
+          Price: ${product?.price?.toFixed(2) || '0.00'}
+        </p>
         <div className="mt-2 text-xs text-gray-500">
-          Purchased: {new Date(product.purchasedAt).toLocaleDateString()}
+          Purchased: {product?.purchasedAt ? new Date(product.purchasedAt).toLocaleDateString() : 'Unknown date'}
         </div>
       </div>
     </div>
@@ -189,35 +203,34 @@ const Profile = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">
-        <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
-        <div className="p-6 flex flex-col gap-2">
-          <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
-            <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
-          </div>
-          {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                if (label === 'Logout') handleLogout();
-                else if (label === 'Home') navigate('/');
-                else if (label === 'Rooms') navigate('/home/publicrooms');
-                else if (label === 'My Rooms') navigate('/home/myrooms');
-                else if (label === 'My Gallery') navigate('/home/gallery');
-                else if (label === 'My Profile') navigate('/home/profile');
-                else if (label === 'Search') navigate('/home/search');
-              }}
-              className={`w-full px-4 py-3 text-left rounded-lg transition-colors duration-200 flex items-center gap-3 ${
-                label === 'My Profile'
-                  ? 'bg-blue-100 text-blue-600'
-                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
-              }`}
-            >
-              <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-      </aside>
+          <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
+            <div className="p-6 flex flex-col gap-2">
+              <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
+                <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
+              </div>
+              {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    if (label === 'Logout') handleLogout();
+                    else if (label === 'Home') navigate('/');
+                    else if (label === 'Rooms') navigate('/home/publicrooms');
+                    else if (label === 'My Rooms') navigate('/home/myrooms');
+                    else if (label === 'My Gallery') navigate('/home/gallery');
+                    else if (label === 'My Profile') navigate('/home/profile');
+                    else if (label === 'Search') navigate('/home/search');
+                  }}
+                  className={`w-full px-4 py-3 text-left rounded-lg transition-colors duration-200 flex items-center gap-3 ${label === 'My Profile'
+                      ? 'bg-blue-100 text-blue-600'
+                      : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                    }`}
+                >
+                  <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+          </aside>
 
           {/* Main Content - Wider and better aligned */}
           <div className="ml-80 px-8 py-8 w-full max-w-6xl">

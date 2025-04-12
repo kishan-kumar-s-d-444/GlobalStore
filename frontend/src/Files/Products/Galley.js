@@ -3,8 +3,9 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthUser } from '../../redux/authSlice';
-import { FiHome, FiSearch, FiMessageSquare, FiUsers, FiImage, FiUser, FiLogOut, FiDownload, FiShare2, FiHeart, FiEye } from 'react-icons/fi';
+import { FiHome, FiSearch, FiMessageSquare, FiUsers, FiImage, FiUser, FiLogOut, FiDownload, FiShare2, FiHeart, FiEye, FiAlertTriangle, FiTrash2 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import { toast } from 'react-hot-toast';
 
 const Gallery = () => {
     const { user } = useSelector(state => state.auth);
@@ -26,11 +27,33 @@ const Gallery = () => {
                 });
 
                 const gallery = res.data.gallery;
-                const formatted = gallery.products.map(item => ({
-                    ...item.productId,
-                    purchasedAt: item.purchasedAt,
-                    quantity: item.quantity
-                }));
+                const formatted = gallery.products.map(item => {
+                    if (!item.productId) {
+                        return {
+                            _id: item._id,
+                            isDeleted: true,
+                            purchasedAt: item.purchasedAt,
+                            quantity: item.quantity || 1,
+                            name: 'Deleted Product',
+                            description: 'The owner has removed this product from their store.',
+                            price: 0,
+                            type: 'other',
+                            fileUrl: ''
+                        };
+                    }
+                    
+                    return {
+                        ...item.productId,
+                        name: item.productId?.name || 'Untitled',
+                        description: item.productId?.description || '',
+                        price: item.productId?.price || 0,
+                        type: item.productId?.type || 'other',
+                        fileUrl: item.productId?.fileUrl || '',
+                        purchasedAt: item.purchasedAt,
+                        quantity: item.quantity || 1,
+                        isDeleted: false
+                    };
+                });
 
                 setProducts(formatted);
             } catch (err) {
@@ -51,7 +74,6 @@ const Gallery = () => {
     };
 
     const handleDownload = (fileUrl, name) => {
-        // In a real app, you would implement proper download functionality
         window.open(fileUrl, '_blank');
     };
 
@@ -64,7 +86,6 @@ const Gallery = () => {
                     url: window.location.href,
                 });
             } else {
-                // Fallback for browsers that don't support Web Share API
                 navigator.clipboard.writeText(window.location.href);
                 alert('Link copied to clipboard!');
             }
@@ -73,20 +94,56 @@ const Gallery = () => {
         }
     };
 
+    const handleRemoveFromCollection = async (productId) => {
+        try {
+            const loadingToast = toast.loading('Removing from collection...');
+            
+            const response = await axios.delete(`http://localhost:5000/api/v1/gallery/remove/${productId}`, {
+                withCredentials: true
+            });
+            
+            if (response.status === 200) {
+                setProducts(products.filter(product => product._id !== productId));
+                setSelectedProduct(null);
+                
+                toast.dismiss(loadingToast);
+                toast.success('Removed from your collection');
+            } else {
+                throw new Error('Failed to remove product');
+            }
+        } catch (err) {
+            console.error('Error removing product:', err);
+            toast.error(err.response?.data?.message || 'Failed to remove from collection');
+        }
+    };
+
     const filteredProducts = products
-        .filter(product => 
-            product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (selectedCategory === 'all' || product.type === selectedCategory)
-        )
+        .filter(product => {
+            const productName = product?.name || '';
+            const productType = product?.type || 'other';
+            const searchTermLower = searchTerm.toLowerCase();
+            
+            return (
+                productName.toLowerCase().includes(searchTermLower) &&
+                (selectedCategory === 'all' || productType === selectedCategory)
+            );
+        })
         .sort((a, b) => {
+            const dateA = a?.purchasedAt ? new Date(a.purchasedAt) : 0;
+            const dateB = b?.purchasedAt ? new Date(b.purchasedAt) : 0;
+            const priceA = a?.price || 0;
+            const priceB = b?.price || 0;
+            const nameA = a?.name || '';
+            const nameB = b?.name || '';
+
             if (sortOption === 'recent') {
-                return new Date(b.purchasedAt) - new Date(a.purchasedAt);
+                return dateB - dateA;
             } else if (sortOption === 'price-high') {
-                return b.price - a.price;
+                return priceB - priceA;
             } else if (sortOption === 'price-low') {
-                return a.price - b.price;
+                return priceA - priceB;
             } else if (sortOption === 'name') {
-                return a.name.localeCompare(b.name);
+                return nameA.localeCompare(nameB);
             }
             return 0;
         });
@@ -95,39 +152,23 @@ const Gallery = () => {
         { id: 'all', name: 'All Items' },
         { id: 'image', name: 'Images' },
         { id: 'video', name: 'Videos' },
+        { id: 'file', name: 'Files' },
         { id: 'other', name: 'Other Files' }
     ];
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-                <div className="text-center">
-                    <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-                    <p className="text-blue-600 font-medium">Loading your gallery...</p>
-                </div>
-            </div>
-        );
-    }
+            <div className="flex min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+                {/* Sidebar - Always visible */}
+                <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
+                    {/* Sidebar content remains the same */}
+                </aside>
 
-    if (error) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-                <div className="text-center p-6 bg-white rounded-xl shadow-md max-w-md">
-                    <p className="text-red-500 mb-4">{error}</p>
-                    <button 
-                        onClick={() => window.location.reload()}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                    >
-                        Retry
-                    </button>
-                    <p className="text-red-500 mb-4">Didn't Purchase Any Yet</p>
-                    <p className="text-red-500 mb-4"></p>
-                    <button 
-                        onClick={() =>navigate('/home/publicrooms')}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                    >
-                        Browse
-                    </button>
+                <div className="flex-1 p-6 ml-0 md:ml-64 flex justify-center items-center">
+                    <div className="text-center">
+                        <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                        <p className="text-blue-600 font-medium">Loading your gallery...</p>
+                    </div>
                 </div>
             </div>
         );
@@ -135,36 +176,36 @@ const Gallery = () => {
 
     return (
         <div className="flex min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-            {/* Sidebar */}
+            {/* Sidebar - Always visible */}
             <aside className="fixed top-0 left-0 h-screen w-80 bg-white shadow-md overflow-y-auto z-30">
-        <div className="p-6 flex flex-col gap-2">
-          <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
-            <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
-          </div>
-          {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                if (label === 'Logout') handleLogout();
-                else if (label === 'Home') navigate('/');
-                else if (label === 'Rooms') navigate('/home/publicrooms');
-                else if (label === 'My Rooms') navigate('/home/myrooms');
-                else if (label === 'My Gallery') navigate('/home/gallery');
-                else if (label === 'My Profile') navigate('/home/profile');
-                else if (label === 'Search') navigate('/home/search');
-              }}
-              className={`w-full px-4 py-3 text-left rounded-lg transition-colors duration-200 flex items-center gap-3 ${
-                label === 'My Gallery'
-                  ? 'bg-blue-100 text-blue-600'
-                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
-              }`}
-            >
-              <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-      </aside>
+                <div className="p-6 flex flex-col gap-2">
+                    <div className="text-2xl font-bold text-blue-600 mb-6 text-center">
+                        <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
+                    </div>
+                    {['Home', 'Search', 'Rooms', 'My Rooms', 'My Gallery', 'My Profile', 'Logout'].map((label, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => {
+                                if (label === 'Logout') handleLogout();
+                                else if (label === 'Home') navigate('/');
+                                else if (label === 'Rooms') navigate('/home/publicrooms');
+                                else if (label === 'My Rooms') navigate('/home/myrooms');
+                                else if (label === 'My Gallery') navigate('/home/gallery');
+                                else if (label === 'My Profile') navigate('/home/profile');
+                                else if (label === 'Search') navigate('/home/search');
+                            }}
+                            className={`w-full px-4 py-3 text-left rounded-lg transition-colors duration-200 flex items-center gap-3 ${
+                                label === 'My Gallery'
+                                    ? 'bg-blue-100 text-blue-600'
+                                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                            }`}
+                        >
+                            <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
+                            <span>{label}</span>
+                        </button>
+                    ))}
+                </div>
+            </aside>
 
             {/* Main Content */}
             <main className="flex-1 p-6 ml-0 md:ml-64">
@@ -243,13 +284,23 @@ const Gallery = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                                    className={`bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 ${
+                                        product.isDeleted ? 'border-l-4 border-red-500' : ''
+                                    }`}
                                 >
                                     <div 
                                         className="relative cursor-pointer" 
                                         onClick={() => setSelectedProduct(product)}
                                     >
-                                        {product.type === 'image' ? (
+                                        {product.isDeleted ? (
+                                            <div className="w-full h-48 bg-gradient-to-br from-red-50 to-pink-100 flex items-center justify-center">
+                                                <div className="text-center p-4">
+                                                    <FiAlertTriangle className="mx-auto text-4xl text-red-500 mb-2" />
+                                                    <p className="text-red-600 font-medium">Product Deleted</p>
+                                                    <p className="text-xs text-red-400 mt-1">No longer available</p>
+                                                </div>
+                                            </div>
+                                        ) : product.type === 'image' ? (
                                             <img 
                                                 src={product.fileUrl} 
                                                 alt={product.name} 
@@ -270,37 +321,58 @@ const Gallery = () => {
                                                 </div>
                                             </div>
                                         )}
-                                        <div className="absolute top-2 right-2 flex gap-2">
-                                            <button 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDownload(product.fileUrl, product.name);
-                                                }}
-                                                className="p-2 bg-white rounded-full shadow-md hover:bg-blue-50 text-blue-500"
-                                                title="Download"
-                                            >
-                                                <FiDownload size={16} />
-                                            </button>
-                                            <button 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleShare(product);
-                                                }}
-                                                className="p-2 bg-white rounded-full shadow-md hover:bg-blue-50 text-blue-500"
-                                                title="Share"
-                                            >
-                                                <FiShare2 size={16} />
-                                            </button>
-                                        </div>
+                                        
+                                        {!product.isDeleted && (
+                                            <div className="absolute top-2 right-2 flex gap-2">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDownload(product.fileUrl, product.name);
+                                                    }}
+                                                    className="p-2 bg-white rounded-full shadow-md hover:bg-blue-50 text-blue-500"
+                                                    title="Download"
+                                                >
+                                                    <FiDownload size={16} />
+                                                </button>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleShare(product);
+                                                    }}
+                                                    className="p-2 bg-white rounded-full shadow-md hover:bg-blue-50 text-blue-500"
+                                                    title="Share"
+                                                >
+                                                    <FiShare2 size={16} />
+                                                </button>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleRemoveFromCollection(product._id);
+                                                    }}
+                                                    className="p-2 bg-white rounded-full shadow-md hover:bg-red-50 text-red-500"
+                                                    title="Delete"
+                                                >
+                                                    <FiTrash2 size={16} />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                     
                                     <div className="p-4">
-                                        <h3 className="text-lg font-semibold text-gray-800 truncate">{product.name}</h3>
+                                        <h3 className={`text-lg font-semibold truncate ${
+                                            product.isDeleted ? 'text-red-600' : 'text-gray-800'
+                                        }`}>
+                                            {product.name}
+                                        </h3>
                                         <div className="flex justify-between items-center mt-2">
-                                            <p className="text-blue-600 font-bold">${product.price.toFixed(2)}</p>
+                                            {!product.isDeleted && (
+                                                <p className="text-blue-600 font-bold">${product.price.toFixed(2)}</p>
+                                            )}
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm text-gray-500">Qty: {product.quantity}</span>
-                                                <FiHeart className="text-gray-400 hover:text-red-500 cursor-pointer" />
+                                                {!product.isDeleted && (
+                                                    <FiHeart className="text-gray-400 hover:text-red-500 cursor-pointer" />
+                                                )}
                                             </div>
                                         </div>
                                         <p className="text-xs text-gray-400 mt-2">
@@ -328,7 +400,11 @@ const Gallery = () => {
                     >
                         <div className="p-6">
                             <div className="flex justify-between items-start mb-4">
-                                <h2 className="text-2xl font-bold text-gray-800">{selectedProduct.name}</h2>
+                                <h2 className={`text-2xl font-bold ${
+                                    selectedProduct.isDeleted ? 'text-red-600' : 'text-gray-800'
+                                }`}>
+                                    {selectedProduct.name}
+                                </h2>
                                 <button 
                                     onClick={() => setSelectedProduct(null)}
                                     className="text-gray-500 hover:text-gray-700"
@@ -339,7 +415,15 @@ const Gallery = () => {
                             
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <div>
-                                    {selectedProduct.type === 'image' ? (
+                                    {selectedProduct.isDeleted ? (
+                                        <div className="w-full h-64 bg-gradient-to-br from-red-50 to-pink-100 rounded-lg flex flex-col items-center justify-center p-6 text-center">
+                                            <FiAlertTriangle className="text-5xl text-red-500 mb-4" />
+                                            <h3 className="text-xl font-medium text-red-600 mb-2">Product Unavailable</h3>
+                                            <p className="text-red-500">
+                                                The seller has removed this product from their store.
+                                            </p>
+                                        </div>
+                                    ) : selectedProduct.type === 'image' ? (
                                         <img 
                                             src={selectedProduct.fileUrl} 
                                             alt={selectedProduct.name} 
@@ -366,17 +450,21 @@ const Gallery = () => {
                                     <div className="mb-6">
                                         <h3 className="text-lg font-semibold text-gray-800 mb-2">Details</h3>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p className="text-sm text-gray-500">Price</p>
-                                                <p className="font-medium">${selectedProduct.price.toFixed(2)}</p>
-                                            </div>
+                                            {!selectedProduct.isDeleted && (
+                                                <>
+                                                    <div>
+                                                        <p className="text-sm text-gray-500">Price</p>
+                                                        <p className="font-medium">${selectedProduct.price.toFixed(2)}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm text-gray-500">Type</p>
+                                                        <p className="font-medium capitalize">{selectedProduct.type}</p>
+                                                    </div>
+                                                </>
+                                            )}
                                             <div>
                                                 <p className="text-sm text-gray-500">Quantity</p>
                                                 <p className="font-medium">{selectedProduct.quantity}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-gray-500">Type</p>
-                                                <p className="font-medium capitalize">{selectedProduct.type}</p>
                                             </div>
                                             <div>
                                                 <p className="text-sm text-gray-500">Purchased On</p>
@@ -392,24 +480,47 @@ const Gallery = () => {
                                     </div>
                                     
                                     <div className="mb-6">
-                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Description</h3>
-                                        <p className="text-gray-600">
-                                            {selectedProduct.description || 'No description available for this item.'}
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                                            {selectedProduct.isDeleted ? 'Status' : 'Description'}
+                                        </h3>
+                                        <p className={`${
+                                            selectedProduct.isDeleted ? 'text-red-500' : 'text-gray-600'
+                                        }`}>
+                                            {selectedProduct.isDeleted 
+                                                ? 'This product is no longer available.'
+                                                : selectedProduct.description || 'No description available for this item.'
+                                            }
                                         </p>
                                     </div>
                                     
                                     <div className="flex gap-3">
+                                        {!selectedProduct.isDeleted && (
+                                            <>
+                                                <button
+                                                    onClick={() => handleDownload(selectedProduct.fileUrl, selectedProduct.name)}
+                                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                                >
+                                                    <FiDownload /> Download
+                                                </button>
+                                                <button
+                                                    onClick={() => handleShare(selectedProduct)}
+                                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                                                >
+                                                    <FiShare2 /> Share
+                                                </button>
+                                            </>
+                                        )}
                                         <button
-                                            onClick={() => handleDownload(selectedProduct.fileUrl, selectedProduct.name)}
-                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                            onClick={() => {
+                                                handleRemoveFromCollection(selectedProduct._id);
+                                            }}
+                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 ${
+                                                selectedProduct.isDeleted 
+                                                    ? 'bg-red-500 text-white hover:bg-red-600'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            } rounded-lg transition-colors`}
                                         >
-                                            <FiDownload /> Download
-                                        </button>
-                                        <button
-                                            onClick={() => handleShare(selectedProduct)}
-                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                                        >
-                                            <FiShare2 /> Share
+                                            <FiTrash2 /> Remove from Collection
                                         </button>
                                     </div>
                                 </div>

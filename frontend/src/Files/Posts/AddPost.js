@@ -79,7 +79,7 @@ const AddPost = () => {
             setFile(null);
             setPreview(null);
 
-            setTimeout(() => navigate(`/room/${roomId}`), 1500);
+            setTimeout(() => navigate(`/home/posts/${roomId}`), 1500);
         } catch (err) {
             console.error(err);
             toast.error(err.response?.data?.message || 'Failed to create post');
@@ -113,7 +113,12 @@ const AddPost = () => {
                             else if (label === 'My Profile') navigate('/home/profile');
                             else if (label === 'Search') navigate('/home/search');
                         }}
-                        className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
+                        className={`w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
+                            ${
+                                label === 'My Rooms'
+                                  ? 'bg-blue-100 text-blue-600'
+                                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                              }`}
                     >
                         <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
                         <span>{label}</span>

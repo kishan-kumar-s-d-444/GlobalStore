@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { toast } from "react-hot-toast";
+import { removeAuthUser } from '../../redux/authSlice';
 
 const CreateRoom = () => {
   const [roomName, setRoomName] = useState("");
@@ -11,15 +12,16 @@ const CreateRoom = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     console.log("Current user:", user);
   }, []);
 
   const handleLogout = () => {
-    // Implement logout logic here
-    toast.success("Logged out successfully!");
-    navigate("/login");
+    dispatch(removeAuthUser());
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   const handleImageChange = (e) => {

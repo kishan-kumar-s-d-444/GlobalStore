@@ -21,6 +21,7 @@ const AddProduct = () => {
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [fileName, setFileName] = useState('');
 
     const handleChange = (e) => {
         setProduct({
@@ -33,11 +34,47 @@ const AddProduct = () => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
             setFile(selectedFile);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreview(reader.result);
-            };
-            reader.readAsDataURL(selectedFile);
+            setFileName(selectedFile.name);
+
+            if (selectedFile.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreview(reader.result);
+                };
+                reader.readAsDataURL(selectedFile);
+            } else {
+                setPreview(null);
+            }
+        }
+    };
+
+    const getFileTypeIcon = (type, fileName) => {
+        if (type.startsWith('image/')) {
+            return preview ? (
+                <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+            ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            );
+        } else if (type.startsWith('video/')) {
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+            );
+        } else if (type === 'application/pdf') {
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+            );
+        } else {
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            );
         }
     };
 
@@ -100,7 +137,7 @@ const AddProduct = () => {
     return (
         <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
             {/* Sidebar */}
-            <aside className="w-80 bg-white border-r border-gray-200 p-6 hidden md:flex flex-col gap-2">
+            <aside className="w-80 bg-white border-r border-gray-200 p-6 hidden md:flex flex-col gap-2 fixed h-screen overflow-y-auto">
                 <div className="text-2xl font-bold text-blue-600 mb-8 text-center">
                     <img src="/logo.png" alt="Logo" className="h-20 mx-auto rounded-lg" />
                 </div>
@@ -116,7 +153,12 @@ const AddProduct = () => {
                             else if (label === 'My Profile') navigate('/home/profile');
                             else if (label === 'Search') navigate('/home/search');
                         }}
-                        className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
+                        className={`w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
+                            ${
+                                label === 'My Rooms'
+                                  ? 'bg-blue-100 text-blue-600'
+                                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                              }`}
                     >
                         <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
                         <span>{label}</span>
@@ -125,7 +167,7 @@ const AddProduct = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-8">
+            <main className="flex-1 p-8 ml-80">
                 <div className="max-w-2xl mx-40">
                     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                         {/* Header with gradient */}
@@ -247,20 +289,13 @@ const AddProduct = () => {
                                     <div className="flex items-center space-x-4">
                                         <div className="relative">
                                             <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 transition-colors overflow-hidden">
-                                                {preview ? (
-                                                    product.type === 'image' ? (
-                                                        <img
-                                                            src={preview}
-                                                            alt="Preview"
-                                                            className="w-full h-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                                            </svg>
-                                                        </div>
-                                                    )
+                                                {file ? (
+                                                    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                                                        {getFileTypeIcon(file.type, fileName)}
+                                                        <span className="text-xs mt-2 text-center text-gray-500 truncate w-full">
+                                                            {fileName}
+                                                        </span>
+                                                    </div>
                                                 ) : (
                                                     <div className="flex flex-col items-center justify-center text-gray-500 p-4">
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -271,7 +306,11 @@ const AddProduct = () => {
                                                 )}
                                                 <input
                                                     type="file"
-                                                    accept={product.type === 'image' ? 'image/*' : product.type === 'video' ? 'video/*' : '*'}
+                                                    accept={
+                                                        product.type === 'image' ? 'image/*' :
+                                                        product.type === 'video' ? 'video/*' :
+                                                        '.pdf,.doc,.docx,.ppt,.pptx'
+                                                    }
                                                     onChange={handleFileChange}
                                                     className="hidden"
                                                     required
@@ -283,18 +322,19 @@ const AddProduct = () => {
                                                 <>
                                                     <p>Recommended size: 800x800px</p>
                                                     <p>Formats: JPG, PNG, GIF</p>
+                                                    <p>Max size: 100MB</p>
                                                 </>
                                             )}
                                             {product.type === 'video' && (
                                                 <>
-                                                    <p>Max size: 50MB</p>
-                                                    <p>Formats: MP4, MOV, AVI</p>
+                                                    <p>Max size: 100MB</p>
+                                                    <p>Formats: MP4, MOV</p>
                                                 </>
                                             )}
                                             {product.type === 'file' && (
                                                 <>
                                                     <p>Max size: 100MB</p>
-                                                    <p>Formats: PDF, DOC, PPT</p>
+                                                    <p>Formats: PDF, DOC, DOCX, PPT, PPTX</p>
                                                 </>
                                             )}
                                         </div>

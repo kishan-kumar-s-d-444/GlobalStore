@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import { FiShoppingCart, FiEdit, FiTrash2, FiX, FiSave, FiEye, FiEyeOff } from 'react-icons/fi';
 import Modal from 'react-modal';
-
+import { removeAuthUser } from '../../redux/authSlice';
 Modal.setAppElement('#root');
 
 const StoreRoom = () => {
     const { roomId } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -18,9 +19,10 @@ const StoreRoom = () => {
     const [purchasedProducts, setPurchasedProducts] = useState([]);
 
     const handleLogout = () => {
-        // Implement your logout logic here
-        console.log("Logout clicked");
-    };
+        dispatch(removeAuthUser());
+        localStorage.removeItem('token');
+        navigate('/login');
+      };
 
     useEffect(() => {
         const fetchProducts = async () => {

@@ -13,9 +13,10 @@ const configs = {
   },
   productImage: {
     folder: 'products',
-    formats: ['jpg', 'jpeg', 'png'],
-    transformations: [{ width: 800, height: 800, crop: 'fill' }],
-    sizeLimit: 5 * 1024 * 1024 // 5MB
+    resource_type: 'auto',
+    formats: ['jpg', 'jpeg', 'png', 'pdf', 'mp4', 'mov', 'doc', 'docx', 'ppt', 'pptx'],
+    transformations: [], // Remove fixed transformations since we'll handle different file types
+    sizeLimit: 100 * 1024 * 1024 // 100MB to accommodate larger files
   },
   postImage: {
     folder: 'posts/images',
@@ -51,13 +52,25 @@ const uploaders = {
   productImage: multer({
     storage: new CloudinaryStorage({
       cloudinary: cloudinary,
-      params: configs.productImage
+      params: {
+        ...configs.productImage,
+        resource_type: 'auto'
+      }
     }),
     fileFilter: (req, file, cb) => {
-      if (file.mimetype.startsWith('image/')) {
+      // Accept images, videos, and documents
+      if (
+        file.mimetype.startsWith('image/') ||
+        file.mimetype.startsWith('video/') ||
+        file.mimetype === 'application/pdf' ||
+        file.mimetype === 'application/msword' ||
+        file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+        file.mimetype === 'application/vnd.ms-powerpoint' ||
+        file.mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      ) {
         cb(null, true);
       } else {
-        cb(new Error('Only image files are allowed'), false);
+        cb(new Error('Invalid file type. Supported types: images, videos, PDF, DOC, DOCX, PPT, PPTX'), false);
       }
     },
     limits: { fileSize: configs.productImage.sizeLimit }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch} from "react-redux";
 import Modal from "react-modal";
-
+import { removeAuthUser } from '../../redux/authSlice';
 Modal.setAppElement("#root");
 
 function PublicRooms() {
@@ -15,10 +15,12 @@ function PublicRooms() {
 
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    // Implement logout logic here
-    console.log("Logout clicked");
+    dispatch(removeAuthUser());
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   useEffect(() => {

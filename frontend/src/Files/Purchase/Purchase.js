@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiShoppingCart, FiEye, FiEyeOff, FiX } from 'react-icons/fi';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import Modal from 'react-modal';
-
+import { removeAuthUser } from '../../redux/authSlice';
 Modal.setAppElement('#root');
 
 const Purchase = () => {
@@ -13,16 +13,17 @@ const Purchase = () => {
     const quantity = parseInt(searchParams.get('quantity')) || 1;
     const { user } = useSelector((state) => state.auth);
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showFullPreview, setShowFullPreview] = useState(false);
     const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
     const handleLogout = () => {
-        // Implement your logout logic here
-        console.log("Logout clicked");
-    };
+        dispatch(removeAuthUser());
+        localStorage.removeItem('token');
+        navigate('/login');
+      };
 
     useEffect(() => {
         const fetchProduct = async () => {

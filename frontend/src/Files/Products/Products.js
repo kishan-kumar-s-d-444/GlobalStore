@@ -126,7 +126,12 @@ const Products = () => {
                             else if (label === 'My Profile') navigate('/home/profile');
                             else if (label === 'Search') navigate('/home/search');
                         }}
-                        className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
+                        className={`w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 rounded-lg transition-colors duration-200 flex items-center gap-3 hover:text-blue-600"
+                            ${
+                                label === 'My Rooms'
+                                  ? 'bg-blue-100 text-blue-600'
+                                  : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                              }`}
                     >
                         <span className="text-lg">{['🏠', '🔍', '💬', '👥', '🖼️', '👤', '🚪'][idx]}</span>
                         <span>{label}</span>
@@ -171,6 +176,7 @@ const Products = () => {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {products.map((product) => (
+                                
                                 <div
                                     key={product._id}
                                     className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all border border-gray-100"
@@ -234,10 +240,10 @@ const Products = () => {
                                         <p className="text-gray-600 mb-4 line-clamp-2">
                                             {product.description}
                                         </p>
-
+                                        
                                         <div className="flex justify-between items-center text-sm text-gray-500 border-t border-gray-100 pt-3">
                                             <span className="truncate max-w-[120px]">
-                                                {product.userId?.username || 'Unknown'}
+                                                {user.username || 'Unknown'}
                                             </span>
                                             <span>
                                                 {new Date(product.createdAt).toLocaleDateString('en-US', {

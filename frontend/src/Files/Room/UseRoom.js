@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { toast } from "react-hot-toast";
+import { removeAuthUser } from '../../redux/authSlice';
 
 const UseRoom = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const socket = useRef();
   const fileInputRef = useRef();
   const messagesEndRef = useRef(null);
@@ -23,8 +25,9 @@ const UseRoom = () => {
   const [deletingMessageId, setDeletingMessageId] = useState(null);
 
   const handleLogout = () => {
-    toast.success("Logged out successfully!");
-    navigate("/login");
+    dispatch(removeAuthUser());
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   useEffect(() => {
