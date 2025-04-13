@@ -208,7 +208,7 @@ const Gallery = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-6 ml-0 md:ml-64">
+            <main className="flex-1 p-6 ml-80 md:ml-84">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                         <div>
