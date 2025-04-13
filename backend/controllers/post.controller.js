@@ -1,5 +1,6 @@
 import {Post} from '../models/post.model.js';
 import {Room} from '../models/room.model.js';
+import cloudinary from '../utils/cloudinary.js';
 
 
 // Create a new post
@@ -193,4 +194,79 @@ export const deleteComment = async (req, res) => {
     console.error("Error deleting comment:", error);
     res.status(500).json({ message: "Server error" });
   }
+};
+
+// Delete a post
+export const deletePost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Check if user is the owner of the post
+        if (post.userId.toString() !== req.userId.toString()) {
+            return res.status(403).json({ message: 'Not authorized to delete this post' });
+        }
+
+        // Delete file from Cloudinary if it exists
+        if (post.fileUrl) {
+            try {
+                const publicId = post.fileUrl.split('/').pop().split('.')[0];
+                await cloudinary.uploader.destroy(publicId);
+            } catch (cloudinaryError) {
+                console.error('Error deleting file from Cloudinary:', cloudinaryError);
+                // Continue with post deletion even if Cloudinary deletion fails
+            }
+        }
+
+        await Post.findByIdAndDelete(req.params.postId);
+        res.json({ message: 'Post deleted successfully' });
+    } catch (error) {
+        console.error('Error in deletePost:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Update a post
+export const updatePost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Check if user is the owner of the post
+        if (post.userId.toString() !== req.userId.toString()) {
+            return res.status(403).json({ message: 'Not authorized to update this post' });
+        }
+
+        // Update the content if provided
+        if (req.body.content) {
+            post.content = req.body.content;
+        }
+
+        // Handle file update if new file was uploaded
+        if (req.file) {
+            // Delete old file from Cloudinary if exists
+            if (post.fileUrl) {
+                try {
+                    const publicId = post.fileUrl.split('/').pop().split('.')[0];
+                    await cloudinary.uploader.destroy(publicId);
+                } catch (cloudinaryError) {
+                    console.error('Error deleting file from Cloudinary:', cloudinaryError);
+                }
+            }
+            post.fileUrl = req.file.path;
+            post.type = req.file.mimetype.startsWith('image/') ? 'image' : 'video';
+        }
+
+        await post.save();
+        res.json(post);
+    } catch (error) {
+        console.error('Error in updatePost:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
 };

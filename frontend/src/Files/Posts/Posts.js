@@ -24,7 +24,8 @@ const Posts = () => {
     roomImage: '',
     members: []
   });
-
+  const [editModalPost, setEditModalPost] = useState(null);
+  const [editContent, setEditContent] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,7 +88,7 @@ const Posts = () => {
   const handleComment = async (postId, content) => {
     try {
       const res = await axios.post(
-        `https://sphere-rfkm.onrender.co/api/v1/post/${postId}/comment`,
+        `https://sphere-rfkm.onrender.com/api/v1/post/${postId}/comment`,
         { userId: user._id, content },
         { withCredentials: true }
       );
@@ -143,6 +144,53 @@ const Posts = () => {
     navigate('/login');
   };
 
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`https://sphere-rfkm.onrender.com/api/v1/post/${postId}`, {
+        withCredentials: true
+      });
+      setPosts(posts.filter(post => post._id !== postId));
+      toast.success('Post deleted successfully');
+    } catch (err) {
+      console.error('Delete post error:', err);
+      toast.error('Failed to delete post');
+    }
+  };
+
+  const handleUpdatePost = async (postId, content) => {
+    try {
+      const formData = new FormData();
+      formData.append('content', content);
+
+      const res = await axios.put(
+        `https://sphere-rfkm.onrender.com/api/v1/post/${postId}`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      setPosts(posts.map(post =>
+        post._id === postId
+          ? { ...post, content: res.data.content }
+          : post
+      ));
+
+      setEditModalPost(null);
+      setEditContent('');
+      toast.success('Post updated successfully');
+    } catch (err) {
+      console.error('Update post error:', err);
+      toast.error('Failed to update post');
+    }
+  };
 
   if (loading) {
     return (
@@ -220,7 +268,7 @@ const Posts = () => {
 
       {/* Main Content - Reduced gap from sidebar */}
       <main className="flex-1 p-4 pl-20 overflow-y-auto">
-        <div className="max-w-3xl">
+        <div className="max-w-36">
           {/* Room Header - Similar to Landing.js */}
           <div 
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6 cursor-pointer"
@@ -279,16 +327,37 @@ const Posts = () => {
                 <div key={post._id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                   {/* Post Header */}
                   <div className="p-4 border-b border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 text-white flex items-center justify-center font-bold">
-                        {(post.userId?.username || 'U').charAt(0).toUpperCase()}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 text-white flex items-center justify-center font-bold">
+                          {(post.userId?.username || 'U').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{post.userId?.username || 'Unknown'}</p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(post.createdAt).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{post.userId?.username || 'Unknown'}</p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(post.createdAt).toLocaleString()}
-                        </p>
-                      </div>
+                      {post.userId?._id === user?._id && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setEditModalPost(post);
+                              setEditContent(post.content);
+                            }}
+                            className="text-blue-500 hover:text-blue-600"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeletePost(post._id)}
+                            className="text-red-500 hover:text-red-600"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -410,6 +479,38 @@ const Posts = () => {
               Post
             </button>
           </form>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModalPost && (
+        <div className="fixed top-0 right-0 w-[450px] h-full bg-white border-l shadow-lg flex flex-col z-50">
+          <div className="p-6 border-b flex justify-between items-center">
+            <h3 className="text-lg font-bold text-gray-800">Edit Post</h3>
+            <button
+              onClick={() => {
+                setEditModalPost(null);
+                setEditContent('');
+              }}
+              className="text-gray-500 hover:text-red-500 text-xl"
+            >
+              ✖
+            </button>
+          </div>
+          <div className="p-6 flex-1">
+            <textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              className="w-full h-40 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Edit your post..."
+            />
+            <button
+              onClick={() => handleUpdatePost(editModalPost._id, editContent)}
+              className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Update Post
+            </button>
+          </div>
         </div>
       )}
     </div>
