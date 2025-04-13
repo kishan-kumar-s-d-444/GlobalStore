@@ -38,44 +38,57 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(401).json({
-                message: "Something is missing, please check!",
-                success: false,
-            });
-        }
-        let user = await User.findOne({ email });
+
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({
-                message: "Incorrect email or password",
                 success: false,
+                message: "Invalid email or password"
             });
         }
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
-        if (!isPasswordMatch) {
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
             return res.status(401).json({
-                message: "Incorrect email or password",
                 success: false,
+                message: "Invalid email or password"
             });
-        };
+        }
 
-        const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.SECRET_KEY,
+            { expiresIn: '7d' }
+        );
 
-        user = {
+        // Set token in both cookie and response
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
+        // Send user data without sensitive information
+        const userWithoutPassword = {
             _id: user._id,
             username: user.username,
             email: user.email,
-        }
-        
-        return res.status(200).json({
-            message: `Welcome back ${user.username}`,
-            success: true,
-            user,
-            token
-        });
+            createdAt: user.createdAt
+        };
 
+        return res.status(200).json({
+            success: true,
+            message: "Login successful",
+            user: userWithoutPassword,
+            token: token
+        });
     } catch (error) {
-        console.log(error);
+        console.error("Login error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
     }
 };
 

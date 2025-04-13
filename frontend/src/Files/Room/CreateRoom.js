@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-hot-toast";
 import { removeAuthUser } from '../../redux/authSlice';
+import axiosInstance from '../../utils/axios';
 
 const CreateRoom = () => {
   const [roomName, setRoomName] = useState("");
@@ -15,8 +15,10 @@ const CreateRoom = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("Current user:", user);
-  }, []);
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   const handleLogout = () => {
     dispatch(removeAuthUser());
@@ -36,44 +38,35 @@ const CreateRoom = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-
-    if (!roomName || !roomImage) {
-      toast.error("Please provide all fields.");
+    
+    if (!roomName.trim()) {
+      toast.error("Room name is required");
       return;
     }
 
     const formData = new FormData();
-    formData.append("roomName", roomName);
-    formData.append("roomImage", roomImage);
-    formData.append("roomType", roomType);
+    formData.append("name", roomName);
+    formData.append("type", roomType);
+    if (roomImage) {
+      formData.append("image", roomImage);
+    }
 
     try {
-      const loadingToast = toast.loading("Creating room...");
-      
-      const res = await axios.post(
-        `https://sphere-rfkm.onrender.com/api/v1/room/createroom`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await axiosInstance.post('/room/createroom', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         }
-      );
+      });
 
-      toast.dismiss(loadingToast);
-      toast.success("Room created successfully!");
-      
-      setRoomName("");
-      setRoomImage(null);
-      setPreviewImage(null);
-      setRoomType("public");
-      navigate("/home/myrooms");
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || "Failed to create room.");
+      if (response.data.success) {
+        toast.success("Room created successfully!");
+        navigate("/myrooms");
+      }
+    } catch (error) {
+      console.error('Error creating room:', error);
+      toast.error(error.response?.data?.message || "Failed to create room");
     }
   };
 
@@ -128,7 +121,7 @@ const CreateRoom = () => {
             </div>
             
             <div className="p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={onSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Room Name
