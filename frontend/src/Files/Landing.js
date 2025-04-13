@@ -31,10 +31,20 @@ const Landing = () => {
 
   const fetchAllPosts = async () => {
     try {
-      const res = await axios.get("https://sphere-rfkm.onrender.com/api/v1/post/all", { withCredentials: true });
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/all`, { 
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setPosts(res.data);
     } catch (err) {
       setError('Failed to fetch posts');
+      if (err.response?.status === 401) {
+        // If unauthorized, redirect to login
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
     }
@@ -42,19 +52,34 @@ const Landing = () => {
 
   const fetchPublicRooms = async () => {
     try {
-      const res = await axios.get("https://sphere-rfkm.onrender.com/api/v1/room/public", { withCredentials: true });
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, { 
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setPublicRooms(res.data.rooms);
       const userId = user?._id;
       const joined = res.data.rooms.filter(room => room.members?.includes(userId)).map(room => room._id);
       setJoinedRoomIds(joined);
     } catch (err) {
       console.error("Error fetching public rooms:", err);
+      if (err.response?.status === 401) {
+        navigate('/login');
+      }
     }
   };
 
   const handleJoinRoom = async (roomId) => {
     try {
-      await axios.post("https://sphere-rfkm.onrender.com/api/v1/room/join/${roomId}", {}, { withCredentials: true });
+      const token = localStorage.getItem('token');
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/join/${roomId}`, {}, { 
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       fetchPublicRooms();
       fetchAllPosts();
     } catch (err) {
@@ -64,10 +89,16 @@ const Landing = () => {
 
   const handleLike = async (postId) => {
     try {
+      const token = localStorage.getItem('token');
       await axios.post(
-        "https://sphere-rfkm.onrender.com/api/v1/post/${postId}/like",
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/like`,
         { userId: user._id },
-        { withCredentials: true }
+        { 
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       setPosts(posts.map(post =>
         post._id === postId
@@ -86,10 +117,16 @@ const Landing = () => {
 
   const handleComment = async (postId, content) => {
     try {
+      const token = localStorage.getItem('token');
       const res = await axios.post(
-        `https://sphere-rfkm.onrender.com/api/v1/post/${postId}/comment`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/comment`,
         { userId: user._id, content },
-        { withCredentials: true }
+        { 
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       const updatedPosts = posts.map(post =>
         post._id === postId

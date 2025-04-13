@@ -23,8 +23,10 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: "https://global-store-frontend.vercel.app",
-  credentials: true
+  origin: ["https://global-store-frontend.vercel.app", "http://localhost:3000"],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Parse JSON bodies
@@ -57,8 +59,10 @@ app.use('/api/v1/post', postRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://global-store-frontend.vercel.app",
+    origin: ["https://global-store-frontend.vercel.app", "http://localhost:3000"],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   },
 });
 setupSocket(io);
