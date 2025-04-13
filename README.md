@@ -70,4 +70,6 @@ npm install
 npm start
 ```
 ### 5.Create a .env file inside the frontend/ folder and add:
+```bash
 REACT_APP_BACKEND_URL=http://localhost:5000
+```
