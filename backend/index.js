@@ -23,7 +23,7 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: "https://global-store-frontend.vercel.app",
   credentials: true
 }));
 
@@ -57,7 +57,7 @@ app.use('/api/v1/post', postRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: "https://global-store-frontend.vercel.app",
     credentials: true,
   },
 });
