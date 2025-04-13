@@ -48,8 +48,8 @@ const Profile = () => {
       setCreatedRooms(createdRes.data.rooms);
 
       // Fetch public rooms and filter joined rooms
-      const publicRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, {
-        withCredentials: true,
+      const publicRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, { 
+        withCredentials: true 
       });
 
       const userId = user?._id;
