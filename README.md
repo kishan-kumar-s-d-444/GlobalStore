@@ -40,16 +40,17 @@ GlobalStore is a full-stack e-content management and interactive web application
 ## ⚙️ Setup Instructions
 
 ### 1. Clone the repository
-
-### 2. Backend Setup
 ```bash
 git clone https://github.com/kishan-kumar-s-d-444/GlobalStore.git
+```
+### 2. Backend Setup
+```bash
 cd GlobalStore
 cd backend
 npm install
 nodemon index.js
 ```
-### Create a .env file inside the backend/ folder and add:
+### 3. Create a .env file inside the backend/ folder and add:
 ```bash
 MONGO_URI=your_mongo_uri
 JWT_SECRET=your_jwt_secret
@@ -60,10 +61,13 @@ STRIPE_SECRET_KEY=..
 STRIPE_PUBLISHABLE_KEY=..
 FRONTEND_URL=http://localhost:3000
 ```
-### 3. Frontend Setup
+### 4. Frontend Setup
 3. Setup Frontend
 ```bash
+cd GlobalStore
 cd frontend
 npm install
 npm start
 ```
+### 5.Create a .env file inside the frontend/ folder and add:
+REACT_APP_BACKEND_URL=http://localhost:5000
