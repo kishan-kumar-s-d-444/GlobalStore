@@ -5,7 +5,6 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { toast } from "react-hot-toast";
 import { removeAuthUser } from '../../redux/authSlice';
-import axiosInstance from '../../utils/axiosConfig';
 
 const UseRoom = () => {
   const { roomId } = useParams();
@@ -41,7 +40,9 @@ const UseRoom = () => {
 
   const fetchMessages = async () => {
     try {
-      const res = await axiosInstance.get(`/api/v1/message/${roomId}`);
+      const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/message/${roomId}`, {
+        withCredentials: true,
+      });
       if (res.data.success && res.data.messages) {
         const messagesWithIds = res.data.messages.map(msg => {
           if (!msg._id && msg.id) return { ...msg, _id: msg.id };
@@ -58,19 +59,26 @@ const UseRoom = () => {
     }
   };
 
-  const fetchRoomDetails = async () => {
-    try {
-      const res = await axiosInstance.get(`/api/v1/room/single/${roomId}`);
-      if (res.data.success && res.data.room) {
-        setRoom(res.data.room);
+  useEffect(() => {
+    const fetchRoomDetails = async () => {
+      try {
+        const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/room/single/${roomId}`, {
+          withCredentials: true,
+        });
+        if (res.data.success && res.data.room) {
+          setRoom(res.data.room);
+        }
+      } catch (error) {
+        toast.error("Error loading room details");
+        console.error("Error fetching room details:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      toast.error("Error loading room details");
-      console.error("Error fetching room details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchRoomDetails();
+    fetchMessages();
+  }, [roomId]);
 
   useEffect(() => {
     socket.current = io("https://sphere-rfkm.onrender.com");

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from 'react-redux';
+import {useDispatch } from 'react-redux';
 import Modal from "react-modal";
 import { removeAuthUser } from '../../redux/authSlice';
-import axiosInstance from '../../utils/axiosConfig';
 
 Modal.setAppElement("#root");
 
@@ -25,33 +25,20 @@ function MyRooms() {
     navigate("/home/createRoom");
   };
 
-  const fetchRooms = async () => {
+  const convertToPublic = async (roomId) => {
     try {
-      const res = await axiosInstance.get('/api/v1/room/myrooms');
-      setRooms(res.data.rooms);
-    } catch (err) {
-      console.error("Error fetching rooms:", err);
-      setError("Failed to fetch rooms");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMakePublic = async (roomId) => {
-    try {
-      await axiosInstance.patch(`/api/v1/room/${roomId}/make-public`);
-      fetchRooms();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleDeleteRoom = async (roomId) => {
-    try {
-      await axiosInstance.delete(`/api/v1/room/${roomId}`);
-      fetchRooms();
-    } catch (err) {
-      console.error(err);
+      await axios.patch(
+        `https://sphere-rfkm.onrender.com/api/v1/room/${roomId}/make-public`,
+        {},
+        { withCredentials: true }
+      );
+      setRooms((prev) =>
+        prev.map((room) =>
+          room._id === roomId ? { ...room, roomType: "public" } : room
+        )
+      );
+    } catch (error) {
+      console.error("Error converting to public:", error);
     }
   };
 
@@ -60,7 +47,33 @@ function MyRooms() {
     setIsDeleteModalOpen(true);
   };
 
+  const deleteRoom = async () => {
+    try {
+      await axios.delete(
+        `https://sphere-rfkm.onrender.com/api/v1/room/${roomToDelete._id}`,
+        { withCredentials: true }
+      );
+      setRooms((prev) => prev.filter((room) => room._id !== roomToDelete._id));
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting room:", error);
+    }
+  };
+
   useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/room/myrooms`, {
+          withCredentials: true,
+        });
+        setRooms(res.data.rooms);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+        setLoading(false);
+      }
+    };
+
     fetchRooms();
   }, []);
 
@@ -152,7 +165,7 @@ function MyRooms() {
                       </span>
                       {room.roomType === 'private' && (
                         <button
-                          onClick={() => handleMakePublic(room._id)}
+                          onClick={() => convertToPublic(room._id)}
                           className="text-xs px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
                         >
                           Make Public
@@ -243,7 +256,7 @@ function MyRooms() {
                 Cancel
               </button>
               <button
-                onClick={() => handleDeleteRoom(roomToDelete._id)}
+                onClick={deleteRoom}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
               >
                 Delete Room
