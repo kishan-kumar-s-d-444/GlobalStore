@@ -62,7 +62,7 @@ const AddPost = () => {
         try {
             const loadingToast = toast.loading('Creating post...');
 
-            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/addPost` , formData, {
+            await axios.post(`https://sphere-rfkm.onrender.com/api/v1/post/addPost` , formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },

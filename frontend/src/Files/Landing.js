@@ -32,7 +32,7 @@ const Landing = () => {
   const fetchAllPosts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/all`, { 
+      const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/post/all`, { 
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${token}`
@@ -53,7 +53,7 @@ const Landing = () => {
   const fetchPublicRooms = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, { 
+      const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/room/public`, { 
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${token}`
@@ -74,7 +74,7 @@ const Landing = () => {
   const handleJoinRoom = async (roomId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/join/${roomId}`, {}, { 
+      await axios.post(`https://sphere-rfkm.onrender.com/api/v1/room/join/${roomId}`, {}, { 
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${token}`
@@ -91,7 +91,7 @@ const Landing = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/like`,
+        `https://sphere-rfkm.onrender.com/api/v1/post/${postId}/like`,
         { userId: user._id },
         { 
           withCredentials: true,
@@ -119,7 +119,7 @@ const Landing = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/comment`,
+        `https://sphere-rfkm.onrender.com/api/v1/post/${postId}/comment`,
         { userId: user._id, content },
         { 
           withCredentials: true,

@@ -27,7 +27,7 @@ const StoreRoom = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/product/room/${roomId}`, {
+                const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/product/room/${roomId}`, {
                     withCredentials: true,
                 });
 
@@ -35,7 +35,7 @@ const StoreRoom = () => {
                     res.data.map(async (product) => {
                         try {
                             const userRes = await axios.get(
-                                `${process.env.REACT_APP_BACKEND_URL}/api/v1/user/${product.userId}`,
+                                `https://sphere-rfkm.onrender.com/api/v1/user/${product.userId}`,
                                 { withCredentials: true }
                             );
                             return {

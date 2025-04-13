@@ -80,7 +80,7 @@ function GlobalRoom() {
   useEffect(() => {
     const fetchPublicRooms = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, {
+        const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/room/public`, {
           withCredentials: true,
         });
         setPublicRooms(res.data.rooms);
@@ -101,7 +101,7 @@ function GlobalRoom() {
   const handleJoinRoom = async (roomId) => {
     try {
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/join/${roomId}`,
+        `https://sphere-rfkm.onrender.com/api/v1/room/join/${roomId}`,
         {},
         { withCredentials: true }
       );
@@ -253,7 +253,7 @@ function PersonalRoom({ room }) {
   const convertToPublic = async (roomId) => {
     try {
       await axios.patch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/${roomId}/make-public`,
+        `https://sphere-rfkm.onrender.com/api/v1/room/${roomId}/make-public`,
         {},
         { withCredentials: true }
       );
@@ -270,7 +270,7 @@ function PersonalRoom({ room }) {
   const deleteRoom = async (roomId) => {
     try {
       await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/${roomId}`,
+        `https://sphere-rfkm.onrender.com/api/v1/room/${roomId}`,
         { withCredentials: true }
       );
       setRooms((prev) => prev.filter((room) => room._id !== roomId));
@@ -282,7 +282,7 @@ function PersonalRoom({ room }) {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/myrooms`, {
+        const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/room/myrooms`, {
           withCredentials: true,
         });
         setRooms(res.data.rooms);

@@ -23,7 +23,7 @@ const PurchaseSuccess = () => {
             try {
                 console.log('Adding to gallery:', { userId, productId, quantity });
                 const res = await axios.post(
-                    `${process.env.REACT_APP_BACKEND_URL}/api/v1/gallery/add`,
+                    `https://sphere-rfkm.onrender.com/api/v1/gallery/add`,
                     { userId, productId, quantity },
                     { withCredentials: true }
                 );

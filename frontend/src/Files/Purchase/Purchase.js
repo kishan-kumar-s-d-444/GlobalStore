@@ -28,7 +28,7 @@ const Purchase = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/product/${productId}`, {
+                const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/product/${productId}`, {
                     withCredentials: true,
                 });
                 setProduct(res.data);
@@ -51,7 +51,7 @@ const Purchase = () => {
             });
             
             const res = await axios.post(
-                `${process.env.REACT_APP_BACKEND_URL}/api/v1/purchase/checkout`,
+                `https://sphere-rfkm.onrender.com/api/v1/purchase/checkout`,
                 {
                     product,
                     quantity,

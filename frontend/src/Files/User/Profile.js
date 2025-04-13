@@ -25,7 +25,7 @@ const Profile = () => {
     try {
       setUpdating(true);
       const res = await axios.put(
-        "https://sphere-rfkm.onrender.com/api/v1/user/${user._id}",
+        `https://sphere-rfkm.onrender.com/api/v1/user/${user._id}`,
         formData,
         { withCredentials: true }
       );
@@ -42,13 +42,13 @@ const Profile = () => {
   const fetchData = async () => {
     try {
       // Fetch rooms created by user
-      const createdRes = await axios.get("https://sphere-rfkm.onrender.com/api/v1/room/myrooms", {
+      const createdRes = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/room/myrooms`, {
         withCredentials: true,
       });
       setCreatedRooms(createdRes.data.rooms);
 
       // Fetch public rooms and filter joined rooms
-      const publicRes = await axios.get("https://sphere-rfkm.onrender.com/api/v1/room/public", { 
+      const publicRes = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/room/public`, { 
         withCredentials: true 
       });
 
@@ -60,7 +60,7 @@ const Profile = () => {
       setJoinedRooms(joined);
 
       // Fetch purchased products
-      const galleryRes = await axios.get("https://sphere-rfkm.onrender.com/api/v1/gallery/${user._id}", {
+      const galleryRes = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/gallery/${user._id}`, {
         withCredentials: true,
       });
 

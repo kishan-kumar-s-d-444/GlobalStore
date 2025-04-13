@@ -47,7 +47,7 @@ function PublicRooms() {
   const handleJoinRoom = async (roomId) => {
     try {
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/room/join/${roomId}`,
+        `https://sphere-rfkm.onrender.com/api/v1/room/join/${roomId}`,
         {},
         { withCredentials: true }
       );

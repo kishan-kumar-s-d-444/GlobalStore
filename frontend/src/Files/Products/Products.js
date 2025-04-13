@@ -32,7 +32,7 @@ const Products = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/product/room/${roomId}`, {
+                const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/product/room/${roomId}`, {
                     withCredentials: true,
                 });
                 setProducts(res.data);
@@ -48,7 +48,7 @@ const Products = () => {
     const handleDelete = async (productId) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
-                await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/product/${productId}`, {
+                await axios.delete(`https://sphere-rfkm.onrender.com/api/v1/product/${productId}`, {
                     withCredentials: true,
                 });
                 setProducts(products.filter(product => product._id !== productId));
@@ -85,7 +85,7 @@ const Products = () => {
         e.preventDefault();
         try {
             const res = await axios.put(
-                `${process.env.REACT_APP_BACKEND_URL}/api/v1/product/${currentProduct._id}`,
+                `https://sphere-rfkm.onrender.com/api/v1/product/${currentProduct._id}`,
                 editedProduct,
                 { withCredentials: true }
             );
