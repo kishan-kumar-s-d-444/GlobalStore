@@ -21,7 +21,9 @@ const Landing = () => {
   const [joinedRoomIds, setJoinedRoomIds] = useState([]);
 
   useEffect(() => {
-    if (user) {
+    if (!user) {
+      navigate('/login');
+    } else {
       fetchAllPosts();
       fetchPublicRooms();
     }
