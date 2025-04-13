@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../utils/axiosConfig';
 import { useSelector,useDispatch } from 'react-redux';
 import { FiShoppingCart, FiEdit, FiTrash2, FiX, FiSave, FiEye, FiEyeOff } from 'react-icons/fi';
 import Modal from 'react-modal';
@@ -24,42 +24,39 @@ const StoreRoom = () => {
         navigate('/login');
       };
 
+    const fetchProducts = async () => {
+        try {
+            const res = await axiosInstance.get(`/api/v1/product/room/${roomId}`);
+            const productsWithUsernames = await Promise.all(
+                res.data.products.map(async (product) => {
+                    try {
+                        const userRes = await axiosInstance.get(
+                            `/api/v1/user/${product.userId}`,
+                            { withCredentials: true }
+                        );
+                        return {
+                            ...product,
+                            username: userRes.data.data.username || 'Unknown'
+                        };
+                        
+                    } catch (err) {
+                        console.error(`Error fetching user ${product.userId}:`, err);
+                        return {
+                            ...product,
+                            username: 'Unknown'
+                        };
+                    }
+                })
+            );
+            setProducts(productsWithUsernames);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/product/room/${roomId}`, {
-                    withCredentials: true,
-                });
-
-                const productsWithUsernames = await Promise.all(
-                    res.data.map(async (product) => {
-                        try {
-                            const userRes = await axios.get(
-                                `https://sphere-rfkm.onrender.com/api/v1/user/${product.userId}`,
-                                { withCredentials: true }
-                            );
-                            return {
-                                ...product,
-                                username: userRes.data.data.username || 'Unknown'
-                            };
-                            
-                        } catch (err) {
-                            console.error(`Error fetching user ${product.userId}:`, err);
-                            return {
-                                ...product,
-                                username: 'Unknown'
-                            };
-                        }
-                    })
-                );
-
-                setProducts(productsWithUsernames);
-                setLoading(false);
-            } catch (err) {
-                console.error(err);
-                setLoading(false);
-            }
-        };
         fetchProducts();
 
         // Load purchased products from local storage or API
