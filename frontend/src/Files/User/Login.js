@@ -64,7 +64,7 @@ const Login = () => {
 
         try {
             setLoading(true);
-            const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/login`, input, {
+            const res = await axios.post("https://sphere-rfkm.onrender.com/api/v1/user/login", input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
