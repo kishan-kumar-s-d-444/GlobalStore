@@ -73,7 +73,7 @@ const UseRoom = () => {
   };
 
   useEffect(() => {
-    socket.current = io(process.env.REACT_APP_BACKEND_URL);
+    socket.current = io("https://sphere-rfkm.onrender.com");
     socket.current.emit("joinRoom", roomId);
 
     socket.current.on("message", (message) => {

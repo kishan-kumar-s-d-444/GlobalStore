@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Modal from "react-modal";
 import { removeAuthUser } from '../../redux/authSlice';
 import axiosInstance from '../../utils/axiosConfig';
@@ -10,7 +10,6 @@ Modal.setAppElement("#root");
 function MyRooms() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [roomToDelete, setRoomToDelete] = useState(null);
   const dispatch = useDispatch();

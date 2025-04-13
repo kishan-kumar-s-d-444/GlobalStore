@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthUser } from '../redux/authSlice';
-import axiosInstance from '../utils/axiosConfig';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
-import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons'
+import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons'
 
-// Add icons to library
-library.add(solidHeart, regularHeart);
 
 const Landing = () => {
   const dispatch = useDispatch();
@@ -35,7 +32,7 @@ const Landing = () => {
   const fetchAllPosts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axiosInstance.get('/post/all', { 
+      const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/post/all`, { 
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${token}`
@@ -56,7 +53,7 @@ const Landing = () => {
   const fetchPublicRooms = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axiosInstance.get('/room/public', { 
+      const res = await axios.get(`https://sphere-rfkm.onrender.com/api/v1/room/public`, { 
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${token}`
@@ -77,7 +74,7 @@ const Landing = () => {
   const handleJoinRoom = async (roomId) => {
     try {
       const token = localStorage.getItem('token');
-      await axiosInstance.post(`/room/join/${roomId}`, {}, { 
+      await axios.post(`https://sphere-rfkm.onrender.com/api/v1/room/join/${roomId}`, {}, { 
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${token}`
@@ -93,8 +90,8 @@ const Landing = () => {
   const handleLike = async (postId) => {
     try {
       const token = localStorage.getItem('token');
-      await axiosInstance.post(
-        `/post/${postId}/like`,
+      await axios.post(
+        `https://sphere-rfkm.onrender.com/api/v1/post/${postId}/like`,
         { userId: user._id },
         { 
           withCredentials: true,
@@ -121,8 +118,8 @@ const Landing = () => {
   const handleComment = async (postId, content) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axiosInstance.post(
-        `/post/${postId}/comment`,
+      const res = await axios.post(
+        `https://sphere-rfkm.onrender.com/api/v1/post/${postId}/comment`,
         { userId: user._id, content },
         { 
           withCredentials: true,
@@ -151,7 +148,7 @@ const Landing = () => {
 
   const handleDeleteComment = async (commentId, postId) => {
     try {
-      await axiosInstance.delete(`/post/${postId}/comment/${commentId}`, {
+      await axios.delete(`https://sphere-rfkm.onrender.com/api/v1/post/${postId}/comment/${commentId}`, {
         data: { userId: user._id },
         withCredentials: true,
       });
