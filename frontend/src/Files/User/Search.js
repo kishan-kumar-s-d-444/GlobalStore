@@ -16,7 +16,7 @@ const Search = () => {
     const fetchPublicRooms = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, { 
+        const response = await axios.get("https://sphere-rfkm.onrender.com/api/v1/room/public", { 
           withCredentials: true 
         });
         

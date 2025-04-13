@@ -26,7 +26,7 @@ function PublicRooms() {
   useEffect(() => {
     const fetchPublicRooms = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, {
+        const res = await axios.get("https://sphere-rfkm.onrender.com/api/v1/room/public", {
           withCredentials: true,
         });
         setPublicRooms(res.data.rooms);

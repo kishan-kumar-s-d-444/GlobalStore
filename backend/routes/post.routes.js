@@ -24,6 +24,6 @@ router.post('/addPost',
 router.get('/room/:roomId', verifyToken, getPostsByRoom);
 router.post('/:postId/like', verifyToken, likePost);
 router.post('/:postId/comment', verifyToken, addComment);
-router.get('/all', verifyToken, getAllPosts);
+router.get('/all',getAllPosts);
 router.delete('/:postId/comment/:commentId', verifyToken, deleteComment);
 export default router;
