@@ -73,6 +73,7 @@ const Login = () => {
             
             if (res.data.success) {
                 localStorage.setItem("user", JSON.stringify(res.data.user));
+                localStorage.setItem("token", res.data.token);
                 dispatch(setAuthUser(res.data.user));
                 toast.success("Login successful! Redirecting...");
                 setTimeout(() => {
