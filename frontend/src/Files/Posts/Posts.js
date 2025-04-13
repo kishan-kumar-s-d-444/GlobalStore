@@ -268,7 +268,7 @@ const Posts = () => {
 
       {/* Main Content - Reduced gap from sidebar */}
       <main className="flex-1 p-4 pl-20 overflow-y-auto">
-        <div className="max-w-46">
+        <div className="max-w-3xl mx-auto pr-[450px]">
           {/* Room Header - Similar to Landing.js */}
           <div 
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6 cursor-pointer"
