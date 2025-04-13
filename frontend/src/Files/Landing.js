@@ -31,7 +31,7 @@ const Landing = () => {
 
   const fetchAllPosts = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/all`, { withCredentials: true });
+      const res = await axios.get("https://sphere-rfkm.onrender.com/api/v1/post/all", { withCredentials: true });
       setPosts(res.data);
     } catch (err) {
       setError('Failed to fetch posts');
@@ -42,7 +42,7 @@ const Landing = () => {
 
   const fetchPublicRooms = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/public`, { withCredentials: true });
+      const res = await axios.get("https://sphere-rfkm.onrender.com/api/v1/room/public", { withCredentials: true });
       setPublicRooms(res.data.rooms);
       const userId = user?._id;
       const joined = res.data.rooms.filter(room => room.members?.includes(userId)).map(room => room._id);
@@ -54,7 +54,7 @@ const Landing = () => {
 
   const handleJoinRoom = async (roomId) => {
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/room/join/${roomId}`, {}, { withCredentials: true });
+      await axios.post("https://sphere-rfkm.onrender.com/api/v1/room/join/${roomId}", {}, { withCredentials: true });
       fetchPublicRooms();
       fetchAllPosts();
     } catch (err) {
@@ -65,7 +65,7 @@ const Landing = () => {
   const handleLike = async (postId) => {
     try {
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/like`,
+        "https://sphere-rfkm.onrender.com/api/v1/post/${postId}/like",
         { userId: user._id },
         { withCredentials: true }
       );
@@ -87,7 +87,7 @@ const Landing = () => {
   const handleComment = async (postId, content) => {
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/comment`,
+        `https://sphere-rfkm.onrender.com/api/v1/post/${postId}/comment`,
         { userId: user._id, content },
         { withCredentials: true }
       );
@@ -111,7 +111,7 @@ const Landing = () => {
 
   const handleDeleteComment = async (commentId, postId) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/${postId}/comment/${commentId}`, {
+      await axios.delete(`https://sphere-rfkm.onrender.com/api/v1/post/${postId}/comment/${commentId}`, {
         data: { userId: user._id },
         withCredentials: true,
       });
