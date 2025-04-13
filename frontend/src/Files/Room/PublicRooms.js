@@ -53,7 +53,7 @@ function PublicRooms() {
       );
       setJoinedRoomIds((prev) => [...prev, roomId]);
       setSelectedRoom(null);
-      navigate(`/home/room/${roomId}`);
+      navigate(`/home/publicrooms`);
     } catch (error) {
       console.error("Failed to join room:", error);
     }
